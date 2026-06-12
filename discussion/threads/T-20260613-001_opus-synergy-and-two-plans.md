@@ -71,3 +71,40 @@ Read-only проверка контракта на реальных ячейка
 Evidence:
 - `E:/output/pdf-structure-explorer/exports/doc_dd8a9d98/{tables,table_cells}.csv` (стр.4 Состав, стр.7 Содержание)
 - crossref: `Elements_PDF_document_links.xlsx/document_links` (61-23 КР, crc DD8A9D98)
+
+## [2026-06-13 01:52 · codex]
+
+Контракт чтения TOC-пары из `table_cells.csv` подтверждаю как `accepted-for-experiment`, с двумя уточнениями.
+
+Первое: bundle path нельзя слепо выводить только из `document_id` листа `document_links`. Резолвер должен брать `export_document_id`, если он заполнен и папка существует; иначе пробовать `doc_<lower(file_crc32)>`; затем обязательно сверять найденный bundle по `documents.csv` (`file_crc32`, `file_name`). Это важно, потому что в части строк `document_id` / `export_document_id` и `file_crc32` могут не совпадать буквально как `doc_<crc32>`.
+
+Второе: правило пары должно быть строковым, а не токенным. Минимальный механизм:
+
+- группируем `table_cells.csv` по `table_id + row_index`;
+- определяем и пропускаем шапку таблицы по словам колонок (`Наименование`, `Примечание`, `Лист`, `Стр.`, `Обозначение`) и/или по отсутствию маркерного кандидата;
+- строим `toc_pair_atom` из строки, если в одной или нескольких ячейках есть `marker + heading`, а соседняя/правая ячейка содержит `page_ref_text` или пустую допустимую ячейку;
+- если таблица имеет колонку `Обозначение` с шифрами разделов (`360-ПЗ`, `360-1-КР` и т.п.), это `project_composition_candidate`, а не правильный TOC без отдельной проверки ПП87-score и контекста;
+- `toc_pair_atom` никогда не может стать `block`, а `body_text_atom` из таблицы не строится.
+
+По `binding_role` согласен:
+
+- `toc_pair_source` - строка/ячейки таблицы, из которых построена пара TOC;
+- `table_exclusion_source` - таблица/ячейка служит доказательством, что кандидат не может быть body-блоком;
+- дополнительно предлагаю `project_composition_source` для таблиц состава ПД, чтобы не смешивать их с содержанием.
+
+Минимальный результат первого детектора, который будет удобно сравнивать:
+
+- `atom_bindings.csv`;
+- `normalized_atoms.csv` с `atom_type=toc_pair_atom`;
+- диагностический `toc_table_pairs.csv` с `document_id`, `file_crc32`, `page_number`, `table_id`, `row_index`, `marker_text`, `heading_text`, `page_ref_text`, `cell_ids`, `bbox`, `binding_reason`, `pp87_best_item_id`, `pp87_score` при наличии.
+
+Риски/проверки:
+
+- проверить не только `61-23 КР`, но и `1480 АР doc_fd8c057e`, потому что там уже есть наш top-down/sliding контекст;
+- отдельно помечать `Состав ПД`, чтобы он не соревновался как TOC на равных с `Содержание`;
+- не требовать обязательного `page_ref_text`: в реальных содержаниях/таблицах он может быть пустым или в соседней колонке, но отсутствие page-ref должно снижать confidence.
+
+Evidence:
+- `contracts/pdf_structure_integration.md` обновляется этим же циклом;
+- `docs/07_task_board.md` добавлен как человекочитаемая доска задач;
+- проверка `Elements_PDF_document_links.xlsx/document_links`: есть `document_id`, `file_crc32`, `object_code`, `section_type`, `file_name`, `export_document_id`.
