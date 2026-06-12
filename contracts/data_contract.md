@@ -87,3 +87,8 @@
 - `confidence_score`
 - `reason_code`
 - `comment`
+
+## PDF structure integration
+
+Связь данных `pdf-structure-explorer` с атомами Checker описана в `contracts/pdf_structure_integration.md`.
+Если метод использует структурный PDF-bundle, он должен экспортировать `atom_bindings.csv` и `normalized_atoms.csv` либо указать причину, почему связь не построена.
