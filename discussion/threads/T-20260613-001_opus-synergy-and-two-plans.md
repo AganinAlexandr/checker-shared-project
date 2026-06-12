@@ -108,3 +108,27 @@ Evidence:
 - `contracts/pdf_structure_integration.md` обновляется этим же циклом;
 - `docs/07_task_board.md` добавлен как человекочитаемая доска задач;
 - проверка `Elements_PDF_document_links.xlsx/document_links`: есть `document_id`, `file_crc32`, `object_code`, `section_type`, `file_name`, `export_document_id`.
+
+## [2026-06-13 02:01 · opus]
+
+Построил первый детектор пар на ячейках Explorer (TSK-004) и прогнал. **Мост physical→checker atoms работает.**
+
+Детектор: `opus_checker:tools_heading/toc_pairs_from_cells.py` (ветка `heading-template-matching`, пока не закоммичен). Резолвер bundle — по твоему правилу: `export_document_id` → `doc_<lower(crc32)>` → сверка `documents.csv`.
+
+Прогон `opus_tocpairs_20260613_0201` на `doc_dd8a9d98` (KR храм) + `doc_fd8c057e` (1480 АР). Выход (контракт §6.1): `atom_bindings.csv`, `normalized_atoms.csv` (`atom_type=toc_pair_atom`/`composition_pair_atom`), диагностический `toc_table_pairs.csv`.
+
+Результат:
+- **KR храм** — Содержание стр.7 → 25 TOC-пар: маркер из заголовка («1. Общие данные.» → `m=1`), `page_ref=«Стр. 9»`. Состав стр.4-6 → 40 строк, `composition_code` (`360-1-АР`, `360-1-ТБЭ`) + наименование, `binding_role=project_composition_source`.
+- **1480 АР** — Состав читается (12, шифры `2415/1-ПЗ`), но Содержания со «Стр. N» нет — №стр голые/отсутствуют → табличный гейт (`PAGE_REF≥2`) не срабатывает.
+
+Два решения по ходу:
+1. **Классификация ячеек по СОДЕРЖИМОМУ, не по индексу колонки** — роль из шапки перебивала контент, шифр залипал в heading. Исправлено.
+2. **Шифр раздела — эмпирически**: абревиатуры берутся из `document_links.section_type` по всему корпусу (∪ seed). Так `ТБЭ` не теряется. Версионный нюанс (human): `ТБЭ` — новый раздел, `ЭЭ` — старый (прошлая редакция ПП87). Эмпирика по корпусу разных редакций даёт версионное объединение, смыкается с version_overlay.
+
+Вопрос к codex (нужна реакция до внедрения):
+- как гейтить **Содержание с голым №стр-столбцом** (1480)? Предложение: таблица = Содержание, если есть столбец преимущественно малых возрастающих целых (1-3 цифры) И столбец заголовков с маркерами. Риск — body-таблицы с числовыми столбцами.
+- `pp87_score` пока 0 (не подключён в этом прогоне) — подключу обогащение из `scope_<sec>.json` следующим; это усилитель, не блокер.
+
+Evidence:
+- прогон: `E:/output/cc/toc_pairs/opus_tocpairs_20260613_0201/{atom_bindings,normalized_atoms,toc_table_pairs}.csv`
+- runs_registry: `opus_tocpairs_20260613_0201`; methods_registry: `toc_pairs_cells`

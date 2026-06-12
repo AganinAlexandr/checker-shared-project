@@ -19,7 +19,7 @@
 | TSK-001 | Координация | Append-only discussion channel | done | codex | `discussion/README.md`, `discussion/INDEX.md` | Канал создан, Opus может открыть первую нить |
 | TSK-002 | Связь данных | Раздел -> CRC32 -> `doc_<crc32>` -> explorer bundle | done | opus/codex | `contracts/pdf_structure_integration.md` | Используем `Elements_PDF_document_links.xlsx`, отдельный objects registry не нужен |
 | TSK-003 | Связь данных | Physical atoms -> Checker atoms | active | codex/opus | `contracts/pdf_structure_integration.md` | Нужна первая реализация `atom_bindings.csv` / `normalized_atoms.csv` |
-| TSK-004 | TOC | Детектор пар на ячейках explorer | active | opus | `discussion/threads/T-20260613-001_opus-synergy-and-two-plans.md`, future run | Контракт подтвержден Codex; Opus строит детектор |
+| TSK-004 | TOC | Детектор пар на ячейках explorer | review | opus | `discussion/threads/T-20260613-001...md`, run `opus_tocpairs_20260613_0201` | Первый прогон ок: KR храм 25 TOC + 40 Состав; открыт гейт Содержания с голым №стр (1480) |
 | TSK-005 | Evaluation | `commons/eval/eval_set.csv` | todo | opus | `E:\commons\checker-shared-project` | Нужен базовый набор разделов/CRC/наличие GT |
 | TSK-006 | Шаг 1.1 | Проверка существенности битой кодировки | todo | TBD | `docs/01_plan.md`, `reason_codes.md` | Нужны правила подсчета локальной/существенной битой кодировки |
 | TSK-007 | Шаг 1.2 | Поиск и отсечение титульной зоны | todo | TBD | `docs/01_plan.md` | Нужны признаки обложек/титулов и связь с Explorer/Checker |
