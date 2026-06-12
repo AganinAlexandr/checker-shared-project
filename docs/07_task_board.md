@@ -26,6 +26,7 @@
 | TSK-008 | Шаг 1.3 | Поиск первого блока BODY | active | opus/codex | `docs/01_plan.md`, `page_taxonomy` | Сравнить методы только после gates 1.1/1.2 |
 | TSK-009 | Шаг 2 | Построение и выбор TOC/BODY корпусов | active | opus/codex | `contracts/data_contract.md` | Уточнить роль explorer-pairs и ПП87-score |
 | TSK-010 | Шаг 3 | Item-level verdicts | todo | TBD | `contracts/metrics_contract.md` | Не начинать без согласованных корпусов и метрик |
+| TSK-011 | SPDS | Извлечение текста внутри СПДС-рамки | todo | TBD | `contracts/spds_frame_text_contract.md` | Не считать решенным: нужен отдельный эксперимент и метрики |
 
 ## Ближайшие задачи
 
@@ -34,6 +35,7 @@
 3. Opus строит детектор пар на `table_cells.csv` explorer.
 4. Параллельно создается `E:\commons\checker-shared-project\eval\eval_set.csv`.
 5. После первого прогона результат заносится в `registries/runs_registry.csv` и кратко отражается здесь.
+6. Отдельно запустить TSK-011: проверить, что текст внутри СПДС-рамки извлекается надежно, а штамп/внешние элементы не смешиваются с body.
 
 ## Правило обновления
 
