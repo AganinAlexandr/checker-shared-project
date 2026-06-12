@@ -1,0 +1,10 @@
+﻿# Generated local/editor files
+*.tmp
+*.bak
+~$*
+.DS_Store
+Thumbs.db
+
+# Heavy run artifacts should live in E:\output\checker-shared-project
+runs/
+reports/

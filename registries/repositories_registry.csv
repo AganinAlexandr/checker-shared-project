@@ -1,0 +1,5 @@
+﻿repo_id,owner_agent,repo_path,write_policy,read_policy,role
+codex_54,codex,E:\Projects\OpenAI\pp87-checker_new,owner_only,all_read,Рабочая ветка Codex / GPT
+opus_checker,opus,C:\Users\alexa\Cursor\Checker87 app\pp87-checker,owner_only,all_read,Рабочая ветка Opus
+pdf_structure,fable,E:\repos\pdf-structure-explorer,owner_only,all_read,Структурный PDF explorer
+shared_project,shared,E:\repos\checker-shared-project,coordinated_changes,all_read,Общий координационный слой

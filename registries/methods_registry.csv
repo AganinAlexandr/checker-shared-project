@@ -1,0 +1,4 @@
+﻿method_id,owner_agent,repo_path,method_family,step,description,input_contract,output_contract,status,notes
+bottom_up_elements,codex,E:\Projects\OpenAI\pp87-checker_new,bottom_up,step1_step2,Атомы/пары/блоки/корпуса и методы по сочетаниям элементов,data_contract.md,data_contract.md,active,
+top_down_heading,opus,C:\Users\alexa\Cursor\Checker87 app\pp87-checker,top_down,step1_step2_step3,Поиск заголовков ПП87 в разделе: IDF/LIS/decoder/quality-gate,data_contract.md,data_contract.md,active,
+pdf_structure,fable,E:\repos\pdf-structure-explorer,pdf_structure,step0,Структурный слой PDF: pages/elements/text_segments/tables/table_cells/page_kind,export_bundle,data_contract.md,active,
