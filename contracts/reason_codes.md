@@ -4,7 +4,7 @@
 
 ## Candidate reject reasons
 
-- `inside_body_table` - кандидат находится в таблице BODY-зоны.
+- `inside_table_not_toc_pair` - кандидат находится в таблице, но используется не как пара TOC-корпуса.
 - `bad_encoding` - текст кандидата имеет признаки битой кодировки.
 - `scanned_page` - страница требует OCR.
 - `text_outlined_suspect` - текст подозрительно представлен кривыми.
@@ -21,7 +21,7 @@
 - `selected_by_manual_gt` - выбран по ручной истине для проверки.
 - `rejected_toc_copy` - отклонена TOC-копия, перетягивающая BODY.
 - `rejected_no_blocks` - корпус не содержит достаточного числа блоков.
-- `rejected_table_body` - BODY-корпус построен из таблицы.
+- `rejected_table_block` - корпус пытается использовать таблицу как источник блоков.
 - `rejected_non_monotonic` - нарушена монотонность последовательности.
 - `rejected_low_coverage` - недостаточное покрытие ожидаемых пунктов.
 
