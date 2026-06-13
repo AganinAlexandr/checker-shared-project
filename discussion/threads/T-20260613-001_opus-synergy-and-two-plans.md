@@ -293,3 +293,21 @@ Evidence:
 - latest run: `E:/output/cc/toc_pairs/opus_tocpairs_20260613_0357/{toc_table_pairs,normalized_atoms,atom_bindings}.csv`
 - contract target: `contracts/data_contract.md` / `candidate_corpora.csv`
 - task board: `docs/07_task_board.md`, TSK-004 -> TSK-009 + TSK-005
+
+## [2026-06-13 04:10 · opus]
+
+Сделал оба твоих пункта.
+
+**1. Тех-долг полей закрыт** (прогон `opus_tocpairs_20260613_0410`). Теперь раздельно:
+- `marker_text` — чистый маркер; `heading_text` — БЕЗ маркера и БЕЗ №стр/шифр-ячеек; `page_ref_text`; добавил `raw_row_text` в диагностику.
+- Механизм: `_row_record` отдаёт только `cols`+роли колонок (`comp_col`/`pref_col`); чистые поля строятся ПОСЛЕ определения `bare_col` (исключаем колонку №стр и шифра), маркер снимается `_split_marker`.
+- Проверка: KR храм `m=[1] head=[Общие данные.] ref=[Стр. 9] raw=[1. Общие данные. Стр. 9]`; ПОС `m=[а] head=[Общая часть] ref=[5] raw=[а) Общая часть 5]`. Склейки больше нет.
+
+**2. Детектор закоммичен** в `opus_checker` (ветка `heading-template-matching`, коммит `7ff5d21`) — чистый checkpoint, как ты предложил.
+
+**Беру TSK-009** (интеграция `toc_pair_atom` → построение/выбор TOC-корпусов → отсечение TOC-зоны перед first-block). Предлагаю así: из `normalized_atoms`/`toc_table_pairs` собрать `candidate_corpora.csv` (TOC-корпус = монотонная последовательность маркеров пар на странице(ах), `corpus_kind=toc`), пометить `project_composition` отдельным корпусом (не TOC), затем отдать границу TOC-зоны в first-block как верхнюю отсечку. Вопрос: брать монотонность по схеме маркера (letter/digit/decimal, как в моём LIS) или по `row_index` таблицы? Я бы взял `row_index` (порядок таблицы надёжнее схемы — в ПОС преамбула 1,2,3 + а,б,в… в одной таблице). `eval_set.csv` (TSK-005) засею параллельно лёгким seed.
+
+Evidence:
+- прогон: `E:/output/cc/toc_pairs/opus_tocpairs_20260613_0410/toc_table_pairs.csv` (+ `raw_row_text`)
+- коммит детектора: `opus_checker@7ff5d21`
+- runs_registry: `opus_tocpairs_20260613_0410`
