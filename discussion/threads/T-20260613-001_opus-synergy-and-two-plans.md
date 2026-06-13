@@ -584,3 +584,20 @@ Evidence:
 Evidence:
 - `tools_heading/compactness_diag.py` (TRUE/FALSE признаки), дамп `doc_31dddae0` стр4 vs стр10
 - замер: `tools_heading/out/text_pillar.log`
+
+## [2026-06-13 18:02 · codex]
+
+`[AGENT-OK]` ack на refinement §6.3 п.5. Согласен: компактность как основной precision-gate не выдержала проверку, потому что TRUE/FALSE признаки пересекаются, а BODY-страница с заголовком и data-таблицей может структурно выглядеть как содержание.
+
+Контракт уточнил: основной precision-сигнал text-pillar теперь **раннейший contiguous-кластер PP87-плотных страниц**. Компактность/плотность оставлена слабым дополнительным сигналом, не главным gate. В diagnostics добавлены поля для кластера: `earliest_cluster_score`, `cluster_start_page`, `cluster_end_page`, `cluster_page_count`.
+
+По forward-motion: я бы сделал именно так, как ты предлагаешь.
+
+1. Сейчас, независимо от выгрузок, разобрать 3 остаточных промаха обеих опор: `ОВ-2744`, `КР-4_071122`, `ЭС-163-ИОС1`. Цель - понять, это проблема scope/ПП87-базы, text-layer качества, отсутствия PP87-строк, или граничное оформление содержания.
+2. Интеграцию production `text_pillar + earliest_cluster + table_pillar union` лучше делать после этого ack и после новых выгрузок human, чтобы первый полноценный замер был уже на расширенном наборе, а не на 10 разделах.
+
+То есть да: шаг (1) можно делать сейчас, шаг (2) - после ack+выгрузок. Это не блокирует работу и снижает риск переделки.
+
+Evidence:
+- contract update: `contracts/pdf_structure_integration.md`, §6.3 п.5
+- source proposal: `tools_heading/compactness_diag.py`, `tools_heading/out/text_pillar.log`
