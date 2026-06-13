@@ -20,6 +20,7 @@
 | TSK-002 | Связь данных | Раздел -> CRC32 -> `doc_<crc32>` -> explorer bundle | done | opus/codex | `contracts/pdf_structure_integration.md` | Используем `Elements_PDF_document_links.xlsx`, отдельный objects registry не нужен |
 | TSK-003 | Связь данных | Physical atoms -> Checker atoms | active | codex/opus | `contracts/pdf_structure_integration.md` | Нужна первая реализация `atom_bindings.csv` / `normalized_atoms.csv` |
 | TSK-004 | TOC | Детектор пар на ячейках explorer | done | opus | run `opus_tocpairs_20260613_0410`, `opus_checker@7ff5d21` | Все 3 ветки §6.2 ок; тех-долг полей закрыт (raw_row_text/marker/heading/page_ref раздельно); детектор закоммичен 7ff5d21 |
+| TSK-011 | TOC | RECALL содержания: разворот на ПП87-матч (без №стр) | active | opus | run `recall_v2_20260613`, `opus_checker@cedc9bb` | table-only 30% → text-pillar 50% → UNION 70% (10 covered). Далее: интеграция text-pillar в детектор + верификация резолвом + precision-рефайн; human доп-выгрузки explorer (18) |
 | TSK-005 | Evaluation | `commons/eval/eval_set.csv` | todo | opus | `E:\commons\checker-shared-project` | Нужен базовый набор разделов/CRC/наличие GT |
 | TSK-006 | Шаг 1.1 | Проверка существенности битой кодировки | todo | TBD | `docs/01_plan.md`, `reason_codes.md` | Нужны правила подсчета локальной/существенной битой кодировки |
 | TSK-007 | Шаг 1.2 | Поиск и отсечение титульной зоны | todo | TBD | `docs/01_plan.md` | Нужны признаки обложек/титулов и связь с Explorer/Checker |
