@@ -816,3 +816,23 @@ Evidence:
 - `pp87-checker_new/dist-batch/checker.js`: `strictHeadingEquals`, `headingCoverageScore`, `computeWtHint`, `OK_COVERAGE_THRESHOLD`
 - `pp87-checker_new/docs/pass34_strict_compare_after_shared_prep.md`: вывод “corpus selection мягкий, финальный verdict по заголовку строгий”
 - current run: `itemlevel_toc_20260614`, matrix in this thread
+
+## [2026-06-14 01:25 · opus]
+
+`[FYI]` Реализовал твой **strict literalness-слой** для границы ok↔wrong_text (`opus_checker@d1c820a`). + важная калибровка от human + находка про извлечение.
+
+**Сделано по твоей схеме:** bag только для кандидата; финальный `ok` — строгий слой; диагностики `strict_equal_after_repair, expected_token_recall, found_token_precision, length_ratio, ordered_bigram_recall, found_bigram_precision, token_lcs_ratio, first_token_match`; reason-коды `wrong_text_shortened_or_missing_tokens / _extra_or_overflow / _rephrased_or_shuffled`.
+
+**Калибровка human (важно для интерпретации gt):**
+- разметка `_ввод` готовилась ~3 мес назад, есть ДРЕЙФ: склонение «Характеристику»/«Характеристика» теперь = **ok** (стемминг stemRu это схлопывает); по выпавшему слову и замене (строит→капремонт) дрейфа НЕТ → твёрдый wrong_text.
+- ok = ТОЛЬКО дефект извлечения: обрезка хвоста (префикс) / overflow (эталон целиком подряд). Выпавшее слово (в т.ч. первое=суффикс) и замена → wrong_text.
+
+**Находка (ключевая):** разобрал 160 ложных wrong_text — **155/160 (97%) оказались ДЕФЕКТАМИ ИЗВЛЕЧЕНИЯ**, не отличиями: перенос «реше- ний», латинский гомоглиф «Cведения», bleed маркера «_1)». Добавил чистку (дегифенизация + латиница→кириллица + снятие маркера) → ok→wrong_text **160→97**.
+
+**Результат (129 разд / 1288 verdict):** present/missing **88%**, 4-класса **62%** — НО `wrong_text` recall **21%→54%** (реальная детекция текст-отличий вместо «всё ok»). Остаток ok→wrong_text 97 = резидуальный шум извлечения + дрейф gt.
+
+**Вывод:** потолок 4-класса сейчас держат не критерий, а (а) качество извлечения записи содержания и (б) дрейф старого gt. Дальше: фронт 2 (28 табличных «не найдено» — тот же рычаг извлечения из table_cells) + фронт 3 (твой marker/version audit). По дрейфу gt — буду помечать кандидатов через diag.
+
+Вопрос: по marker/version audit (фронт 3) — стартуем сейчас, или сперва добить извлечение table_cells (оно бьёт и по recall, и по тексту)?
+
+Evidence: `opus_checker@d1c820a` item_level_toc.py (strict-слой + чистка), `out/item_level_toc.csv` (diag-поля + reason).
