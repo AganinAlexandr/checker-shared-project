@@ -204,7 +204,8 @@ TOC-пара из таблицы строится только из `table_cells
 1. Если есть `marker_heading_rows >= 3` и `bare_page_ref_column=true`, но нет `toc_context`, таблица остается `toc_pair_candidate_low_confidence`.
 2. Если есть `toc_context`, нет признаков состава ПД и таблица до BODY-зоны, таблица может стать `toc_pair_source`.
 3. Если есть колонка `Обозначение` или устойчивые шифры разделов, таблица остается `project_composition_source`, даже при наличии числовых столбцов.
-4. `pp87_score` используется как усилитель/арбитр, но не заменяет структурные признаки.
+4. `page_ref` используется как сигнал наличия/структуры TOC и как поле диагностики, но не как истина расположения BODY-пункта.
+5. `pp87_score` используется как усилитель/арбитр, но не заменяет структурные признаки.
 
 Рекомендуемые диагностические поля:
 - `table_role_guess`: `toc_table | project_composition | body_table | other_table | unknown`;
@@ -212,6 +213,48 @@ TOC-пара из таблицы строится только из `table_cells
 - `toc_table_score`;
 - `toc_gate_reason`;
 - `binding_role`.
+
+## 6.3. Text-pillar содержания по `text_segments.csv`
+
+Статус: accepted-for-experiment.
+
+Text-pillar распознает страницы содержания не по ruled-таблицам и не по номеру страницы, а по плотному совпадению строк текстового слоя с множеством разных пунктов ПП87.
+
+Архитектура TOC-распознавания состоит из двух независимых опор:
+- `text_pillar` - ПП87-match заголовков по `text_segments.csv`;
+- `table_pillar` - ruled/table структура по `table_cells.csv` / `tables.csv`.
+
+Итоговый TOC-кандидат может подтверждаться объединением `text_pillar ∪ table_pillar`. Эти опоры комплементарны: табличное содержание может хорошо ловиться table-pillar, списочное содержание в текстовом слое - text-pillar.
+
+Минимальные правила:
+1. Text-pillar строится из `text_segments.csv` с сохранением source-связей в `atom_bindings.csv` / `normalized_atoms.csv`.
+2. Страница-кандидат содержания должна иметь много совпадений с разными пунктами ПП87, а не один сильный match.
+3. Номер страницы из TOC (`page_ref`) не является истиной расположения BODY-пункта. Он может использоваться только как сигнал, диагностическое поле и мягкая верификация.
+4. Resolve найденных заголовков вперед по телу документа используется как мягкий дополнительный сигнал. Он не должен становиться жестким gate, если это резко снижает recall.
+5. Основной precision-инструмент для text-pillar - компактность/плотность: содержание обычно состоит из многих коротких плотных строк-заголовков, а BODY - из более длинной прозы.
+6. Text-pillar не строит `block`; его результат - `toc_pair_atom` / `toc_page_candidate` / `toc_corpus` для дальнейшей item-level проверки.
+7. Если text-pillar и table-pillar расходятся, конфликт фиксируется в diagnostics, а не скрывается выбором одной опоры без evidence.
+
+Экспериментальные пороги:
+- `distinct_pp87_min = 5`;
+- `bag_score_min = 0.4`.
+
+Эти пороги имеют статус `accepted-for-experiment`: они получены на малой covered-выборке и должны уточняться на дополнительных выгрузках explorer / taxonomy.
+
+Рекомендуемые диагностические поля:
+- `pillar_source`: `text_pillar | table_pillar | union`;
+- `toc_page_candidate`;
+- `distinct_pp87_count`;
+- `bag_score_min`;
+- `matched_pp87_item_ids`;
+- `compactness_score`;
+- `resolve_score`;
+- `resolved_heading_count`;
+- `text_line_count`;
+- `short_line_fraction`;
+- `page_ref_signal_kind`;
+- `pillar_confidence`;
+- `pillar_reject_reason`.
 
 ## 7. Открытые вопросы
 
