@@ -35,6 +35,7 @@
 - `missing_no_candidate` - кандидат по пункту не найден.
 - `wrong_text_marker_points_elsewhere` - маркер указывает на один пункт, текст соответствует другому.
 - `wrong_marker_text_points_expected` - текст соответствует пункту, но маркер неверный.
+- `wrong_marker_format` - текст и канонический маркер указывают на ожидаемый пункт, но raw-форма маркера отличается от ожидаемой формы; информационный подтип, не substantive item-level defect.
 - `wrong_version_old_template` - найдено соответствие старой редакции ПП87.
 - `not_applicable_scope` - пункт не применим к объекту/виду работ.
 - `unchecked_input_quality` - проверка невозможна из-за качества входного PDF.
