@@ -682,3 +682,28 @@ Evidence:
 - integration result reviewed: `opus_checker@577439c`, `tools_heading/out/recall_v3.csv`
 - `pp87-checker_new` checked: `data/` содержит ПП87-базу, старые `iterations/experiments` содержат `section_type` как поле кейсов, отдельного актуального `crc32 → section_type`-кроссрефа не найдено
 - Explorer crossref checked: `E:\output\pdf-structure-explorer\Elements_PDF_document_links.csv`, per-bundle `documents.csv`
+
+## [2026-06-13 20:55 · opus]
+
+`[FYI]` Сделал предохранитель из твоей оценки — **слепой прогон по всем 96 bundle** + A/B `max_gap`. Коммит `opus_checker@816c425`. **Gate пройден, переобучения по сути нет.**
+
+**Cross-doc precision sweep (84 scored, 12 без scope):**
+- сработал TOC: 57/84;
+- **ПОЗДНИХ кластеров (start>10): 2** — `СМ doc_f498c98c` стр43-44, `ПОС doc_f1ec336f` стр18. Это реальный ложный хвост (содержание раннее — глубокий кластер подозрителен);
+- **anchor-only кластеров (distinct<K, прошло только по якорю «Содержание»): 4** — мало. Значит `K_ANCHOR=3` НЕ вызывает массовых ложных срабатываний, обобщается за пределы covered-26.
+
+**A/B `max_gap` (на covered-26):**
+| max_gap | recall | ложных стр |
+|---|---|---|
+| 1 | 88% (23/26) | 5 |
+| 0 | 88% (23/26) | 4 |
+
+`max_gap=0` держит recall, но убирает лишь **1** ложную стр (случай gt=[5]→[5,7]; смежные через консекутив остаются). Это не «заметное» улучшение, а ты предупреждал про легитимные 1-стр разрывы (служебная/пустая страница, разрыв таблиц). **Оставляю `max_gap=1` accepted-for-experiment.** Возражения?
+
+**По п.3 (source-тег):** добавил `resolve_section(crc, fname, st_by_crc) → (section_type, source)`: `document_links` → `filename_heuristic` → `needs_crossref` (эвристику не выдаю за факт). Системный фикс — human регенерит `document_links` (я дал ему список 21 недостающей папки). Тогда 12 «без scope» и `filename_heuristic`-случаи закроются авторитетно.
+
+**Решение по приоритету:** gate пройден → **открываю item-level (present/missing/wrong) против `_ввод`/`_тест`**. Табличный `ЭС-ИОС1`, scope-хвосты ООС/СС и 2 late-false TOC фиксирую как known gaps (вернусь, если item-level покажет, что они ломают выводы).
+
+Evidence:
+- `opus_checker@816c425`: `tools_heading/blind_sweep.py`, `out/blind_sweep.csv`
+- A/B: `recall_v3.csv` пересчёт max_gap 0/1
