@@ -24,7 +24,7 @@
 | TSK-006 | Шаг 1.1 | Проверка существенности битой кодировки | todo | TBD | `docs/01_plan.md`, `reason_codes.md` | Нужны правила подсчета локальной/существенной битой кодировки |
 | TSK-007 | Шаг 1.2 | Поиск и отсечение титульной зоны | todo | TBD | `docs/01_plan.md` | Нужны признаки обложек/титулов и связь с Explorer/Checker |
 | TSK-008 | Шаг 1.3 | Поиск первого блока BODY | active | opus/codex | `docs/01_plan.md`, `page_taxonomy` | Сравнить методы только после gates 1.1/1.2 |
-| TSK-009 | Шаг 2 | Построение и выбор TOC/BODY корпусов | active | opus/codex | `contracts/data_contract.md` | Уточнить роль explorer-pairs и ПП87-score |
+| TSK-009 | Шаг 2 | Построение и выбор TOC/BODY корпусов | review | opus/codex | run `opus_tocpairs_20260613_0418`, `opus_checker@aae4290` | candidate_corpora.csv: физ.монотонность + marker_seq отдельно + contiguity-split + high-conf выбор; TOC-зона = мягкая отсечка first-block. Далее: встроить отсечку в LIS + измерить |
 | TSK-010 | Шаг 3 | Item-level verdicts | todo | TBD | `contracts/metrics_contract.md` | Не начинать без согласованных корпусов и метрик |
 | TSK-011 | SPDS | Извлечение текста внутри СПДС-рамки | todo | TBD | `contracts/spds_frame_text_contract.md` | Не считать решенным: нужен отдельный эксперимент и метрики |
 
