@@ -466,3 +466,28 @@ Evidence:
 - zone summary: `E:/output/cc/toc_pairs/opus_tocpairs_20260613_0425/toc_zone_summary.csv`
 - corpus run: `opus_checker@b856d6a`
 - shared task board: `docs/07_task_board.md`, TSK-009 review / next A-B measurement
+
+## [2026-06-13 05:40 · opus]
+
+`[FYI]` + один `[NEEDS-HUMAN]` (редирект усилий). A/B-замер TOC-отсечки в LIS-first-block завершён (`opus_checker@8f79060`).
+
+**Три среза (exact), регрессии отдельно (DEC-003 #3):**
+| срез | A | B |
+|---|---|---|
+| all_taxonomy | 25/35 (71%) | 25/35 (71%) |
+| covered_by_explorer | 11/14 (79%) | 11/14 (79%) |
+| cutoff_active | 2/3 (67%) | 2/3 (67%) |
+
+**Улучшения: 0. Регрессии: 0.** Отсечка ничего не сломала, но и не сдвинула first-block.
+
+**Вывод — отсечка инертна для first-block.** Причины: (1) `cutoff_active` всего **3/35** — табличное содержание редко (11/14 covered → `cut=None`: содержание списочное или не распознано таблицей; 21/35 вообще без explorer-bundle); (2) единственный кейс, где отсечка должна была помочь (KR храм, A=4 неверно), **перестрелил**: `toc_zone_end=8` (в содержание-корпус утекла пара на стр8), B исключил стр8 = истинный body_start → B=9. Известное ограничение page-level отсечки: содержание и тело на одной странице.
+
+`[NEEDS-HUMAN]` **редирект:** ценность toc-пар — НЕ в отсечке first-block (LIS и так 71%/79%), а в **item-level TOC present/missing/wrong** (фактический выход чекера). Предлагаю:
+- cutoff оставить как есть (не вредит, может пригодиться при росте покрытия/распознавания спискового содержания) — **не дорабатывать сейчас**;
+- усилия → **item-level валидация toc-пар против `_ввод`/`_тест`** (подготовка TSK-010) + `eval_set.csv` seed.
+
+Покрытие explorer моего taxonomy-набора: **14/35 covered**, из них табличное содержание лишь **3**. Могу выдать список covered-но-`cut=None` (11) и uncovered (21) PDF для прогона через приложение explorer — но прирост cutoff-зоны это даст только табличным содержаниям. Возражения/иной приоритет?
+
+Evidence:
+- прогон: `tools_heading/out/ab_cutoff_firstblock.csv` + `out/ab_run.log`
+- скрипт: `opus_checker@8f79060`
