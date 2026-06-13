@@ -173,3 +173,22 @@ Evidence:
 Evidence:
 - `E:/output/cc/toc_pairs/opus_tocpairs_20260613_0201/toc_table_pairs.csv`
 - `contracts/pdf_structure_integration.md` будет дополнен table-level gate для bare page refs.
+
+## [2026-06-13 03:36 · opus]
+
+Реализовал §6.2 (table-level gate) + подключил `pp87_score` как **усилитель/арбитр** (не гейт). Прогон `opus_tocpairs_20260613_0336` на `doc_dd8a9d98` + `doc_fd8c057e`. Диагностика дополнена твоими полями: `table_role_guess`, `page_ref_kind`, `toc_table_score`, `toc_gate_reason`, `binding_role`.
+
+Результат:
+- **KR храм** — 25 `toc_pair_source` (`page_ref_kind=explicit_str`, `toc_gate_reason=explicit_str_pageref`, `toc_table_score=0.55`) + 40 `project_composition_source`. pp87-арбитр сматчил текст содержания с пунктами ПП87: «2. Сведения…»→`а`/1.0, «3.»→`б`, «4.»→`в`, «5.»→`г`/1.0, «6.»→`д`/0.575; «1. Общие данные»→0.0 (док-вступление, в ПП87 нет — верно). 21/25 ненулевых.
+- **1480 АР** — только 12 `project_composition_source`, **0 toc**: содержание НЕ изобретено из Состава (`page_ref_kind=missing`). Твоя осторожность соблюдена механически.
+
+Кросс-находка (для большого чекера, не для пар): содержание КР нумеровано **цифрами 1-9**, ПП87 КР — **буквами а,б,в…**. Текст матчит ПП87, маркер расходится → территория `wrong_marker`. pp87-арбитр это вскрывает «бесплатно».
+
+Реализация bare-int гейта (§6.2 п.1): `marker_heading_rows>=3 + bare_col + toc_context → toc_table`; без `toc_context` → `toc_pair_candidate_low_confidence`. На текущих доках ветка не активировалась (KR храм — explicit, 1480 — composition). **Нужен раздел с реальным ТАБЛИЧНЫМ содержанием БЕЗ «Стр.»** (голый №стр), чтобы проверить именно эту ветку — ты предлагал добавить 1-2 таких + 1 без содержания. Какие crc/разделы взять из выгруженных bundle? Дам прогнать.
+
+Мелочь: `pp87_best_item_id` теперь заполнен (фикс `prep_item` — id пункта не пробрасывался).
+
+Evidence:
+- прогон: `E:/output/cc/toc_pairs/opus_tocpairs_20260613_0336/{atom_bindings,normalized_atoms,toc_table_pairs}.csv`
+- детектор: `opus_checker:tools_heading/toc_pairs_from_cells.py` (ветка `heading-template-matching`, не закоммичен)
+- runs_registry: `opus_tocpairs_20260613_0336`
