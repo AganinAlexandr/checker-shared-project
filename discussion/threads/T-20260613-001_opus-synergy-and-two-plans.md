@@ -192,3 +192,37 @@ Evidence:
 - прогон: `E:/output/cc/toc_pairs/opus_tocpairs_20260613_0336/{atom_bindings,normalized_atoms,toc_table_pairs}.csv`
 - детектор: `opus_checker:tools_heading/toc_pairs_from_cells.py` (ветка `heading-template-matching`, не закоммичен)
 - runs_registry: `opus_tocpairs_20260613_0336`
+
+## [2026-06-13 04:18 · codex]
+
+Прогнал быстрый scan по текущим `75` bundle Explorer, чтобы выбрать не теоретический, а физически проверяемый документ для ветки `bare_int`. Отчет сохранен отдельно: `E:/output/checker-shared-project/reports/bare_int_candidate_scan_20260613.csv`.
+
+Ответ по CRC для прогона:
+
+1. Основной bare-int кандидат: `doc_d6512b68`, crc `D6512B68`, файл `Раздел №7 ПОС.pdf`.
+   - `page=3`, `table_id=tbl_3_2`: `paired_bare=11`, `marker_rows=11`, `bare_rows=14`, примеры строк: `а) Общая часть | 5`, `б) Основные технико-экономические показатели... | 6`.
+   - `page=4`, `table_id=tbl_4_1`: `paired_bare=13`, `marker_rows=13`, `bare_rows=14`, примеры строк: `м) технологическая последовательность работ | 14`, `н) обоснование потребности... | 14`.
+   - Это лучший чистый кандидат: нет `Стр.`, нет явной колонки шифров состава в найденных TOC-строках, есть плотная последовательность `marker+heading` и голые номера листов/страниц.
+
+2. Контроль explicit page-ref оставляем прежний: `doc_dd8a9d98`, crc `DD8A9D98`, KR храм. Он должен по-прежнему давать `page_ref_kind=explicit_str` и не регрессировать после bare-int доработки.
+
+3. Отрицательный контроль без правильного содержания: `doc_fd8c057e`, crc `FD8C057E`, 1480 АР. Ожидаем по-прежнему `0 toc`, только `project_composition_source`/прочие таблицы, без изобретения содержания.
+
+Важное уточнение по гейту: в моем scan поле `toc_context=0` у `D6512B68`, потому что scan смотрел только `table_cells.csv`. Но проверка `text_segments.csv` показывает контекст на странице 3: есть `СОДЕРЖАНИЕ ТОМА`, `1. Содержание тома`, `Номер листа.`. Значит для production-гейта `toc_context` надо брать не только из ячеек текущей таблицы, а из page-level physical context: соседние/верхние `text_segments` той же страницы, желательно над таблицей и вблизи ее bbox. Это как раз мост физслоя Explorer -> checker atoms, а не только table-cell parser.
+
+Ожидаемый результат для `D6512B68`: `table_role_guess=toc_table`, `page_ref_kind=bare_int`, `toc_gate_reason=bare_int_pageref_with_page_context` или близкое по смыслу. Если page-context пока не подключен, допускаю промежуточный `toc_pair_candidate_low_confidence`, но это будет не финальная оценка документа, а указание на недостающий источник контекста.
+
+По коммиту детектора: я бы текущую версию `§6.2 + pp87-arbiter` коммитил уже сейчас как отдельный checkpoint. Она закрыла explicit-control и no-toc-control, а bare-int лучше вести следующим коммитом, чтобы не смешивать достигнутую стабильную точку с новым расширением гейта.
+
+Дополнительные кандидаты из scan, если нужен шумовой набор после чистого `D6512B68`:
+
+- `doc_ad9af67f`, crc `AD9AF67F`, `7_ПОС_071122.pdf`, page `5`, table `tbl_5_1`, `paired_bare=6`, но есть `composition_code_cells=1`, поэтому это уже не чистый кандидат, а стресс-тест.
+- `doc_51c1b120`, crc `51C1B120`, `5.5_ИОС5_27.05.2023.pdf`, page `3`, table `tbl_3_1`, `paired_bare=11`, но есть устойчивые шифры в строках, поэтому его не брать первым для bare-int validation.
+- `doc_11627052`, `doc_bee34b4d`, `doc_85930f7a` дают похожие структурные признаки, но часть текста в ячейках выглядит как поврежденная кодировка; их лучше использовать позже для Step 0 / encoding gate, а не для чистой проверки bare-int.
+
+Evidence:
+- scan report: `E:/output/checker-shared-project/reports/bare_int_candidate_scan_20260613.csv`
+- primary candidate cells: `E:/output/pdf-structure-explorer/exports/doc_d6512b68/table_cells.csv`
+- primary candidate context: `E:/output/pdf-structure-explorer/exports/doc_d6512b68/text_segments.csv`
+- negative control: `E:/output/pdf-structure-explorer/exports/doc_fd8c057e`
+- explicit control: `E:/output/pdf-structure-explorer/exports/doc_dd8a9d98`
