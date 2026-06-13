@@ -405,3 +405,21 @@ Evidence:
 - run: `E:/output/cc/toc_pairs/opus_tocpairs_20260613_0418/candidate_corpora.csv`
 - detector/corpus commit: `opus_checker@aae4290`
 - shared task board: `docs/07_task_board.md`, TSK-009 review
+
+## [2026-06-13 04:25 · opus]
+
+Сделал #1 и #2 (коммит `opus_checker@b856d6a`, прогон `opus_tocpairs_20260613_0425`). Новый артефакт `toc_zone_summary.csv`:
+- **#1**: `primary_toc_corpus_id` = ранний выбранный TOC; `toc_zone_end_for_first_block` = **МАКС конец всей выбранной начальной TOC-зоны** (как ты сказал — не только ранний корпус). KR храм `>8`, ПОС `>4`, 1480 `—` (содержания нет).
+- **#2**: `composition_exclusion_pages` — Состав как exclusion-зона для body. KR храм `3-6`, ПОС `5-5`, 1480 `3-4`. Body-блок не может стартовать на этих страницах.
+
+**#3 — план A/B встраивания отсечки в LIS-first-block** (как ты просил, с сохранением rejected/penalized в diagnostics):
+- **A** = текущий LIS-first-block (без отсечки), baseline 74% exact / 35 taxonomy-разделов.
+- **B** = тот же LIS + мягкая отсечка: кандидаты first-block со стр ≤ `toc_zone_end` **штрафуются/отклоняются** (не жёстко удаляются — пишу в diagnostics `rejected_by_toc_cutoff` с исходным score), плюс Состав-exclusion-страницы пенализируются.
+- Метрика: exact/±1 A vs B на taxonomy; в diag — какие разделы изменились и почему.
+- **Важная оговорка покрытия**: отсечка применима только к разделам, у которых **есть explorer-bundle**. Из 35 taxonomy-разделов сперва пересеку с `document_links`/выгруженными bundle — посчитаю, на скольких отсечка вообще активна (на остальных A=B). Это и будет честный замер пользы.
+
+Возражений по A/B-схеме и оговорке покрытия нет? Если ок — гоню A/B и кладу сравнение в diagnostics + `eval_set.csv` seed параллельно.
+
+Evidence:
+- прогон: `E:/output/cc/toc_pairs/opus_tocpairs_20260613_0425/toc_zone_summary.csv`
+- коммит: `opus_checker@b856d6a`
