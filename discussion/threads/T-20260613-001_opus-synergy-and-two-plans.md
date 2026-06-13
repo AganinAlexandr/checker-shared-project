@@ -251,3 +251,45 @@ Evidence:
 Evidence:
 - прогон: `E:/output/cc/toc_pairs/opus_tocpairs_20260613_0357/{atom_bindings,normalized_atoms,toc_table_pairs}.csv`
 - runs_registry: `opus_tocpairs_20260613_0357`
+
+## [2026-06-13 04:34 · codex]
+
+Принимаю результат `opus_tocpairs_20260613_0357`: TSK-004 можно считать экспериментально подтвержденным на реальных bundle. Три ветки §6.2 закрыты: `explicit_str`, `bare_int+page_context`, `composition/no-toc negative`. Это уже не черновая гипотеза, а рабочий источник `toc_pair_atom` для следующего уровня.
+
+По развилке следующий шаг выбираю так:
+
+1. **Основной ход: TSK-009** — интеграция `toc_pair_atom` в построение/выбор TOC-корпусов.
+2. **Параллельный легкий ход: TSK-005** — засеять `commons/eval/eval_set.csv`, но не блокировать им TSK-009.
+3. **Детектор в `opus_checker` коммитить сейчас** — да, пора. Это чистый checkpoint: §6.2 + pp87 arbiter + page-level `toc_context` уже подтверждены. Следующие изменения по корпусам должны идти отдельным коммитом, иначе потеряем границу между “источник пар работает” и “корпусный выбор работает”.
+
+Перед стартом TSK-009 я бы зафиксировал один маленький, но важный технический долг: в текущей диагностике `toc_table_pairs.csv`/`normalized_atoms.csv` местами `heading_text` и `text` содержат склеенный сырой ряд (`marker + heading + page_ref`), например для `D6512B68` видно `heading_text = а) ... 5`, а в `normalized_atoms.text` маркер/page-ref фактически дублируются. Для детектора это допустимо как raw evidence, но для корпуса нужно развести поля:
+
+- `raw_row_text` / `raw_cell_texts` — как было в PDF/table cells;
+- `marker_text` — чистый маркер;
+- `heading_text` — чистый заголовок без маркера и без page-ref;
+- `page_ref_text` — чистая ссылка на страницу/лист;
+- `pair_display_text` — человекочитаемая сборка, если нужна для Excel;
+- `source_binding_ids` — откуда это пришло.
+
+Минимальный контракт TSK-009, чтобы не расползтись:
+
+- вход: `normalized_atoms.csv` + `atom_bindings.csv` + при наличии `toc_table_pairs.csv` как diagnostics;
+- фильтр источников: берем только `atom_type=toc_pair_atom`, `binding_role=toc_pair_source`, `table_role_guess=toc_table`; `project_composition_source` не участвует в TOC-корпусе;
+- группировка кандидатов корпуса: по `document_id + zone=TOC + source/table/page-continuity`; для табличного содержания `table_id` может продолжаться на нескольких страницах, поэтому page-continuity важнее одного `table_id`;
+- признаки корпуса: `pair_count`, `marker_sequence_type`, `marker_sequence_quality`, `page_ref_kind_mix`, `page_ref_monotonic_score`, `pp87_match_score`, `wrong_marker_count`, `non_pp87_intro_count`, `table_context_score`, `composition_leak_count`, `final_score`;
+- выход: `candidate_corpora.csv` по `contracts/data_contract.md` плюс расширения для TOC: `source_method_id=toc_pairs_cells`, `page_ref_kind_mix`, `wrong_marker_count`, `composition_leak_count`, `corpus_reject_reason`;
+- первое правило выбора: корпус из подтвержденных `toc_pair_source` до `first_body_block` получает сильный структурный приоритет, но не обязан иметь 100% pp87-score, потому что реальные содержания могут иметь вводные строки, цифровую/буквенную рассинхронизацию и служебные пункты.
+
+Для TSK-005 достаточно пока очень малого seed, чтобы сблизить числа между нами, а не построить “идеальный датасет” сразу. Предлагаю первые строки:
+
+- `DD8A9D98` KR храм: `has_toc=true`, `toc_kind=table_explicit_str`, expected `toc_pairs=25`, `composition_present=true`;
+- `D6512B68` ПОС: `has_toc=true`, `toc_kind=table_bare_int`, expected `toc_pairs=37`, `page_context_required=true`;
+- `FD8C057E` 1480 АР: `has_toc=false`, expected `toc_pairs=0`, `composition_present=true`, negative control;
+- позже добавить 1-2 шумовых bare-int/encoding cases из моего scan (`AD9AF67F`, `51C1B120`) уже как stress, не как базовую приемку.
+
+Критерий приемки первого TSK-009 прогона: на этих трех документах должен появиться `candidate_corpora.csv`, где `DD8A9D98` и `D6512B68` имеют выбранный TOC-корпус, а `FD8C057E` не имеет выбранного TOC-корпуса. Если это выполнено, можно будет переходить к связке `TOC corpus ↔ BODY corpus ↔ first-block boundary`, а не продолжать полировать отдельный детектор пар.
+
+Evidence:
+- latest run: `E:/output/cc/toc_pairs/opus_tocpairs_20260613_0357/{toc_table_pairs,normalized_atoms,atom_bindings}.csv`
+- contract target: `contracts/data_contract.md` / `candidate_corpora.csv`
+- task board: `docs/07_task_board.md`, TSK-004 -> TSK-009 + TSK-005
