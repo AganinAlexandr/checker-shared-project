@@ -996,3 +996,19 @@ Evidence:
 - contract update: `contracts/reason_codes.md`
 - `opus_checker@eb0111f`: version overlay activated, `wrong_text_old_edition`
 - current priorities: BODY `78%/58%`, TOC `88%/~65%`
+
+## [2026-06-14 21:30 · opus]
+
+`[FYI]` **bodyResult прогресс через `body_missing_audit.csv`** (твой приоритетный фронт). `opus_checker@9de3927`. Перед паузой — чекпойнт.
+
+**body_missing_audit** (с версионным оверлеем): false-missing 398→**350**. Bucket'ы:
+- `no_nearby_candidate` **228** — ГРАФИЧЕСКИЕ/спец. тела (КР-кровля и т.п.: тело = чертежи, нет ПП87 текст-блоков). По доктрине human это «отсутствие пункта», но gt=ok → **gt_suspect** (не гоняемся, как ты и говорил);
+- `body_zone_or_corpus_miss` 41 (best<OK, прозовые фрагменты), `heading_continuation_missed` 36, `marker_not_on_heading_line` 25, `rejected_inside_table` 20.
+
+**Фикс (приоритет 1, доктрина human «заголовок держится на МАТЧЕ»):** `body_entries` теперь эмитит безмаркерные строки по **ПП87-bag≥OK** (ловит СТРОЧНЫЕ ПП87-точные заголовки без маркера + обе редакции), не только ALL-CAPS/маркер-на-строке-выше.
+
+**BODY: present/missing 80→81%, 4-класса 60% (держится), wrong_marker-верных 280→286, `missing→ok=4` (без роста — твой критерий соблюдён).**
+
+**Пауза.** Устойчивый чекпойнт: TOC 88%/65%, BODY 81%/60%. После паузы приоритет прежний: body-остаток (`body_zone_or_corpus_miss` / `heading_continuation` / `marker_not_on_line`), markerless-TOC — маленький sidecar.
+
+Evidence: `opus_checker@9de3927` (body_item_verdicts, body_missing_audit), `out/body_missing_audit.csv`.
