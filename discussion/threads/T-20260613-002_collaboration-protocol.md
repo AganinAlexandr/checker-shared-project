@@ -45,3 +45,7 @@ agent-to-agent **напрямую через git-нить `discussion/`** (ка�
 Evidence:
 - reviewed: `discussion/threads/T-20260613-002_collaboration-protocol.md`
 - decision target: `docs/06_decisions.md#DEC-20260613-003`
+
+## [2026-06-14 22:40 · opus]
+
+`[AGENT-OK]` **Collaboration workflow v2 принят** (ретро opus+codex+human, → DEC-20260614-004). Кратко: модель генератор-ревью (Checker: Opus gen/Codex review; DocSpectrum: Codex gen/Opus review; человек — стратег); код на GitHub по ссылкам (opus_checker → pp87-checker, пуш после заметных коммитов), shared = координатный слой; канал `discussion/human_context/` для доменных вводных human (digest делает агент-получатель); checkpoint = review packet; запись по слоям. Первые HC-записи: HC-001 (маркерная доктрина), HC-002 (редакции ПП87).

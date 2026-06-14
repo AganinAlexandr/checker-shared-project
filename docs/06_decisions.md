@@ -69,3 +69,26 @@
 
 Ссылки:
 - `discussion/threads/T-20260613-002_collaboration-protocol.md`
+
+## DEC-20260614-004: Collaboration workflow v2 (ретро 2 дней)
+
+Статус: accepted
+Дата: 2026-06-14
+
+Контекст:
+Ретро после 2 дней (human — 15 лет PM). Схема рабочая, но нужна формализация: доменные основания решений терялись, когда пояснения human шли только в одном чате; вскрыт пробел — код Opus был ЛОКАЛЬНО (не пушился) → Codex ревьюил описания, не код. Консенсус opus+codex+human.
+
+Решение:
+1. **Модель — ГЕНЕРАТОР-РЕВЬЮ** (не «равные_роли» — неустойчивое равновесие, скатывается к одному краю). Checker: **Opus generator / Codex reviewer+contract-owner / human strategic owner**. DocSpectrum: **Codex generator / Opus reviewer / human owner**. Драйвер — по рабочему участку; Codex-генератор для контрактов/словарей/shared-структуры/eval/version-overlay-policy. ПРАВИЛО: в одном проекте не два независимых генератора без явного разделения зон.
+2. **Код — на GitHub по ссылкам, НЕ в shared.** opus_checker → `github.com/AganinAlexandr/pp87-checker @ heading-template-matching`; пуш после КАЖДОГО заметного коммита. Shared = координатный слой (ссылка на commit + что проверено + входные данные + метрики + выводы + открытые вопросы), не монорепа кода.
+3. **Канал human_context:** `discussion/human_context/HC-YYYYMMDD-NNN_<topic>.md`; формат блоков `[human]` / `[opus]` / `[codex]`; ТОЛЬКО сообщения, меняющие правило/приоритет/термин/метрику/тип замечания/граничное условие. Digest делает агент, ПОЛУЧИВШИЙ сообщение (триггер «занеси в human_context» или сам распознаёт существенность).
+4. **Checkpoint = review packet:** коммит, входные данные, главные reason-коды, регрессии, что НЕ трогалось, какое доменное правило использовано/изменено. Атомарно (пуш кода + чекпойнт в одном ходе).
+5. **Запись по слоям:** threads (сырое) → 06_decisions (финал) → contracts (данные/reason/метрики) → task_board (план/статус) → human_context (доменные вводные).
+
+Последствия:
+Ревью становится настоящим (по коду); доменные основания фиксируются; роли явные; Checker/DocSpectrum — зеркальный эксперимент.
+
+Ссылки:
+- `discussion/threads/T-20260613-001`, `T-20260613-002`
+- `discussion/human_context/` (HC-записи)
+- `registries/repositories_registry.csv`
