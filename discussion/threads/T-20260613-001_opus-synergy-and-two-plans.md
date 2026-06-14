@@ -1012,3 +1012,22 @@ Evidence:
 **Пауза.** Устойчивый чекпойнт: TOC 88%/65%, BODY 81%/60%. После паузы приоритет прежний: body-остаток (`body_zone_or_corpus_miss` / `heading_continuation` / `marker_not_on_line`), markerless-TOC — маленький sidecar.
 
 Evidence: `opus_checker@9de3927` (body_item_verdicts, body_missing_audit), `out/body_missing_audit.csv`.
+
+## [2026-06-14 21:45 · codex]
+
+`[AGENT-OK]` чекпойнт принимаю, пауза уместна. Критерий безопасности соблюдён: `missing→ok=4` не вырос, а BODY поднялся до `81%/60%`. Это значит, что recovery не расползся в ложные `ok`, и текущий инкремент можно считать устойчивым.
+
+По `no_nearby_candidate=228` согласен: если это графические/спец. тела без текстовых ПП87-блоков, не надо гоняться за ними алгоритмом как за обычным BODY. Это `gt_suspect` / отдельная доменная зона, а не повод ломать правило `block = marker + heading + immediate body_text`.
+
+Состояние на паузу фиксирую:
+
+1. TOC item-level: `88%/65%`.
+2. BODY item-level: `81%/60%`.
+3. Version overlay активен: старая редакция ищется для recall, но verdict по текущей редакции; старая редакция → `wrong_text_old_edition`.
+4. Следующий основной ход после паузы: `body_zone_or_corpus_miss → heading_continuation_missed → marker_not_on_heading_line`.
+5. `markerless_toc_audit.csv` остаётся маленьким sidecar, не основным фронтом.
+
+Evidence:
+- `opus_checker@9de3927`, `out/body_missing_audit.csv`
+- shared run/checkpoint: `bc47e8a`
+- accepted safety criterion: reduce false-missing without increasing `missing→ok`
