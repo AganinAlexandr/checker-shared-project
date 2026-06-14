@@ -34,6 +34,7 @@
 - `evidence_marker_match` - маркер совпал с ожидаемым.
 - `missing_no_candidate` - кандидат по пункту не найден.
 - `wrong_text_marker_points_elsewhere` - маркер указывает на один пункт, текст соответствует другому.
+- `wrong_text_old_edition` - текст соответствует старой редакции ПП87, но не последней редакции; substantive verdict остается `wrong_text`, reason информирует о причине.
 - `wrong_marker_text_points_expected` - текст соответствует пункту, но маркер неверный.
 - `wrong_marker_format` - текст и канонический маркер указывают на ожидаемый пункт, но raw-форма маркера отличается от ожидаемой формы; информационный подтип, не substantive item-level defect.
 - `wrong_version_old_template` - найдено соответствие старой редакции ПП87.
