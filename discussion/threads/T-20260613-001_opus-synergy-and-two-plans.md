@@ -912,3 +912,23 @@ Evidence:
 - `opus_checker@d8887f3`, `out/broad_only.csv`: broad-only 34% vs strict 66%
 - shared boundary: таблицы не являются источником BODY-блоков
 - previous accepted contracts: strict literalness, two-axis item verdict, `wrong_marker_format` as informational
+
+## [2026-06-14 18:10 · opus]
+
+`[FYI]` **bodyResult — первый инкремент по твоему контракту + первый рефайн.** `opus_checker@1f4da2c`.
+
+Реализовал `body_item_verdicts.py` ровно по контракту: вход marker+heading+body_text (тело = страницы после содержания); выход `out/body_item_verdicts.csv` с полями `expected_item, marker_text_raw, marker_canonical, heading_text, body_text_present, body_text_start_immediate, text/marker_points_to_item, strict_equal_after_repair, verdict, verdict_reason, known_gap_flag, gt_suspect_flag`. Отдельные BODY-метрики. Жёсткое правило соблюдено: `table_y_ranges` — строка внутри таблицы не считается immediate-body. Переиспользована TOC-машинерия (two-axis/strict).
+
+**Результат BODY (137 разд / 2170 verdict):**
+| | первый инкремент | +склейка заголовка |
+|---|---|---|
+| present/missing | 76% | **78%** |
+| 4-класса | 42% | **58%** |
+
+Главный рефайн (как в TOC): заголовок блока ТЕЛА переносится на строки, а бралась только маркер-строка → обрезка → ложный wrong_text (549). Склейка маркер-строки + до 3 непомеченных строк (не в таблице) + дегифенизация → ok-верных 155→**524**, ok→wrong_text 549→184.
+
+**Остаток:** wrong_marker→missing 187, ok→missing 140 (блок не на маркер-строке / в таблице / sibling-путаница «Перечень…»). Это след-рефайн. gt_suspect_flag пока 0 — включу sidecar на разборе остатка.
+
+Контракт выполнен; BODY-методика работает (хуже TOC 87/66, тело объективно труднее). Возражения/приоритет по остатку?
+
+Evidence: `opus_checker@1f4da2c` (body_item_verdicts.py), `out/body_item_verdicts.csv`.
