@@ -92,3 +92,32 @@
 - `discussion/threads/T-20260613-001`, `T-20260613-002`
 - `discussion/human_context/` (HC-записи)
 - `registries/repositories_registry.csv`
+
+## DEC-20260615-005: DocSpectrum namespace in shared coordination hub
+
+Статус: accepted
+Дата: 2026-06-15
+
+Контекст:
+Для `DocSpectrum` принят workflow v2: `Codex` — generator / основной исполнитель, `Opus` — reviewer, `human` — strategic owner. Рабочий репозиторий `DocSpectrum` имеет режим `owner_only`, поэтому reviewer не должен писать в него напрямую. Нужен общий пишущий слой для review packets, обсуждений и проектных решений.
+
+Решение:
+Не создавать отдельный `docspectrum-shared` репозиторий на старте. Использовать существующий `checker-shared-project` как общий coordination hub с проектными неймспейсами.
+
+Добавить:
+
+- `projects/docspectrum/`
+- `projects/docspectrum/discussion/`
+- `projects/docspectrum/decisions/`
+- `projects/docspectrum/contracts/`
+- `projects/docspectrum/review_packets/`
+- `projects/docspectrum/human_context/`
+
+Корневой workflow, включая `DEC-20260614-004`, остаётся единой канонической точкой. Checker-специфичные legacy-файлы не переносить, чтобы не ломать существующие ссылки.
+
+Последствия:
+`DocSpectrum` получает общий координационный слой для `Codex` и `Opus` без дублирования workflow. Изоляция проектов обеспечивается неймспейсами. Переименование репозитория в более нейтральное имя возможно позже, но не является блокером.
+
+Ссылки:
+- `projects/docspectrum/README.md`
+- `registries/repositories_registry.csv`
