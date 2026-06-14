@@ -43,3 +43,53 @@ Evidence:
 
 - DocSpectrum commit `d64cc89`
 - `projects/docspectrum/review_packets/RP-20260615-001_v0-methodology.md`
+
+## [2026-06-15 01:35 · opus via human]
+
+`[AGENT-OK]` RP-20260615-001 reviewed.
+
+Вердикт:
+
+- v0 методически здоровая и пригодна как измерительный цикл;
+- блокирующих корректностных багов нет;
+- разнесение `section_passport` / `comparison_result` соблюдено;
+- утечек библиотечной зависимости в паспорт не найдено;
+- приватность текста через хэши/длины в detailed закрыта;
+- подвекторная диагностика и centered cosine признаны правильным направлением.
+
+Must-fix перед v0.1:
+
+- centered cosine сейчас считается по гетерогенному корпусу из 16 строк и не является валидной внутритиповой нормализацией;
+- текстовая ось не воспроизводится только из repo, потому что читает raw `text_segments.csv` из `E:/output/DocSpectrum/export`;
+- raw cosine нельзя оставлять самым весомым компонентом aggregate;
+- точные SHA1-сигнатуры страниц/таблиц требуют near-match слоя;
+- нужны статусы `measured_zero`, `missing`, `not_applicable`; `low_confidence` позже через parse/broken encoding;
+- полные generated JSON лучше вынести в output, оставив в repo скрипты, golden fixture и сводные CSV;
+- текущая логика pair generation не готова к N>2.
+
+Ответы reviewer на open questions:
+
+- Q1: raw cosine убрать из weighted mix или оставить только diagnostic;
+- Q2: первым near-match сделать bucketing/tolerance по table layout, затем bucketed page signature;
+- Q3: минимум статусов v0.1 — `measured_zero`, `missing`, `not_applicable`;
+- Q4: generated samples отделить от repo; полные JSON в `E:/output/DocSpectrum`, в repo — код, small fixture, diffable summaries.
+
+Evidence:
+
+- Opus review relay, 2026-06-15
+- `RP-20260615-001_v0-methodology.md`
+
+## [2026-06-15 01:45 · codex]
+
+`[AGENT-OK]` Review принят generator.
+
+План реакции:
+
+- RP переведён в `reviewed`;
+- must-fix фиксируются в `v0.1_action_plan.md`;
+- v0.1 не стартует с перенастройки весов вслепую: сначала надо решить artifact split, N>2 pairing и минимальные статусы признаков;
+- веса aggregate и eval остаются зоной совместного решения с human, потому что без 3-го объекта и экспертного eval_set валидировать новые веса нельзя.
+
+Evidence:
+
+- `projects/docspectrum/v0.1_action_plan.md`

@@ -43,7 +43,17 @@ Raw cosine по положительным количественным приз
 - page/table/text axes;
 - coverage и причины исключения признаков после их появления.
 
+После review `RP-20260615-001` raw cosine считается диагностической метрикой, а не валидированным scoring-компонентом.
+
+До появления eval_set и нормализации по сопоставимой популяции:
+
+- не повышать вес raw cosine;
+- не трактовать `feature_cosine_v0` как доказательство сходства;
+- помечать centered cosine по текущему корпусу как `global_mixed_corpus_diagnostic`.
+
 ## Текущие веса detailed_similarity_v0
+
+Статус: deprecated for v0.1 planning.
 
 - `feature_cosine_v0`: 0.35
 - `page_signature_jaccard`: 0.20
