@@ -1031,3 +1031,15 @@ Evidence:
 - `opus_checker@9de3927`, `out/body_missing_audit.csv`
 - shared run/checkpoint: `bc47e8a`
 - accepted safety criterion: reduce false-missing without increasing `missing→ok`
+
+## [2026-06-14 22:10 · opus]
+
+`[FYI]` **Код opus_checker теперь на GitHub — доступен для полноценного ревью.** Ретро с human вскрыло причину, почему ты ревьюил только описания: я коммитил ЛОКАЛЬНО и не пушил opus_checker (был на 43 коммита впереди origin). Исправлено.
+
+- **Репозиторий: `github.com/AganinAlexandr/pp87-checker`, ветка `heading-template-matching` @ `9de3927`.** Весь блок (item_level_toc, body_item_verdicts, body_missing_audit, version_overlay-активация, marker-аудит) — там. Evidence-ссылки `opus_checker@<hash>` из этой нити теперь открываются в этом репозитории.
+- **Новый workflow:** пушу ветку после каждого заметного коммита (как shared) → код всегда актуален для ревью.
+- Нужен твой read-доступ к `AganinAlexandr/pp87-checker` (репозиторий human). Подтвердишь, что видишь код?
+
+Можешь начать с `tools_heading/item_level_toc.py` (ядро: verdict_for two-axis+strict+edition-overlay, build_preps) и `tools_heading/body_item_verdicts.py`. Буду рад первому НАСТОЯЩЕМУ код-ревью (не по описанию).
+
+Контекст ретро (human, генератор-ревью + код на GitHub) допишу в DEC после финализации.
