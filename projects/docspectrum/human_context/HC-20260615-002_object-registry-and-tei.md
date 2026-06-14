@@ -46,6 +46,14 @@ Current expected registry state:
 - source folders found: `35`
 - objects with TEI: `34`
 - missing explanatory note XML: `1683_25`
+- same-address groups: `5`
+- inconsistent same-address groups: `1`
+
+Human clarified that TEI values for one address must be identical. If same-address TEI differs, it is a designer/source-PD error in the pre-expertise documentation, not a valid house distinction.
+
+Current known inconsistency:
+
+- `1680_25` / `1684_25`, `Подольск, мкр. Климовск, ул. Симферопольская, 13`
 
 ## Methodological use
 
