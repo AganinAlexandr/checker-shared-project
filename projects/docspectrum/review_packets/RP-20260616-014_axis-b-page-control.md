@@ -1,6 +1,6 @@
 # RP-20260616-014: Axis B page-count control
 
-Status: open
+Status: reviewed
 Project: DocSpectrum
 Generator: codex
 Reviewer: opus
@@ -120,3 +120,51 @@ Evidence:
 - generated summary: `E:/output/DocSpectrum/axis_b_correlations_v0_35_n2/axis_b_correlations_v0.json`
 - generated shortlist: `E:/output/DocSpectrum/axis_b_correlations_v0_35_n2/axis_b_shortlist_page_control_v0.csv`
 - shared context: `RP-20260616-013`, `HC-20260615-006`, `HC-20260615-007`, `T-20260615-013`
+
+## [2026-06-16 09:55 MSK - opus via human]
+
+`[AGENT-OK]` Verdict: partial Spearman is implemented correctly, page-count control is valid, and the result is honestly interpreted. No blocking bugs.
+
+Reviewed:
+
+- Partial Spearman implementation is valid for v0: Pearson correlation of rank residuals after regressing ranks on `page_count` ranks.
+- Degenerate `metric == page_count` case is excluded with `page_control_status=not_applicable`.
+- Zero-variance guard is present.
+- `partial_delta_abs` is useful diagnostic output; negative values correctly mean page count was acting as a suppressor.
+
+Confirmed result:
+
+- `28/28` strict shortlist rows survive page-count control.
+- Minimum `abs(partial_spearman_page_count)` is `0.57`.
+- Some rows become stronger after control, for example floors vs text segment count (`0.65 -> 0.74`), so page count was masking rather than explaining part of the relation.
+- This closes RP-012 size-confound concern specifically for `page_count`.
+
+Important interpretation refinement:
+
+- The 28 rows should not be read as 28 independent discoveries.
+- They distill to 17 distinct `(section, metric)` combinations because floors, height, volume and area are collinear proxies of house scale.
+- 23 of 28 rows are concentrated in `ИОС5.5.1`; the remaining rows are in `ИОС5.4.1` and `ИОС5.1`.
+- Floors and height dominate the TEI side.
+- The honest reading is one strong concentrated phenomenon: house scale, especially floors/height, leaves a measurable trace in engineering-section text/entity/count structure. This matches HC-006.
+
+Shortlist policy:
+
+- The clean shortlist is the 21 entity/ratio rows.
+- The 7 `document_count` rows should remain `caution-only`: they survive page-count control, but may still be proxies for other size paths.
+- Page-count control is necessary but not sufficient for "outside size"; it controls one size proxy, not all possible mediators.
+
+Reviewer answers:
+
+- Q1: rank-residual partial Spearman is correct and acceptable for v0.
+- Q2: `abs(partial) >= 0.45` is a reasonable provisional threshold because it matches the replication threshold.
+- Q3: keep the 7 document-count rows as caution-only; use the 21 entity/ratio rows as the main clean shortlist.
+- Q4: do not keep stacking size controls now; returns are diminishing and over-control of mediators becomes a risk. A cheap next step is a distilled shortlist view with 17 distinct `(section, metric)` and the `ИОС5.5.1` cluster. The real confidence unlock is cross-org validation; near-match page bucketing remains a separate scoring/page-axis improvement.
+
+Evidence:
+
+- `docspectrum@2341727..bd63045`
+- verified partial implementation and degenerate handling
+- verified `axis_b_shortlist_page_control_v0.csv`
+- 28 survive, min partial `0.57`
+- 17 distinct `(section, metric)`
+- 23/28 rows in `ИОС5.5.1`; floors/height dominate
