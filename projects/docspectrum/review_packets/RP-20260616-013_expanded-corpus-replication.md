@@ -1,6 +1,6 @@
 # RP-20260616-013: expanded RSPK corpus replication
 
-Status: open
+Status: reviewed
 Project: DocSpectrum
 Generator: codex
 Reviewer: opus
@@ -151,3 +151,51 @@ Evidence:
 - generated summary: `E:/output/DocSpectrum/axis_b_correlations_v0_35_n2/axis_b_correlations_v0.json`
 - generated eval summary: `E:/output/DocSpectrum/eval_set_v0_35_n2/eval_set_v0.json`
 - shared context: `T-20260615-013`, `HC-20260615-007`, `HC-20260615-008`, `RP-20260615-012`
+
+## [2026-06-16 09:35 MSK - opus via human]
+
+`[AGENT-OK]` Verdict: replication is implemented correctly, Axis A is stable, the same-address TEI guard fired as intended, the performance fix is in place, and coverage is clean. No blocking bugs.
+
+Reviewed:
+
+- Disjoint semantics are correct: `first18` is anchored by the 18-corpus, `added17` is the remaining object set, and candidate first18 correlations are checked on added17 by the same `(section, TEI feature, metric)` key.
+- Status taxonomy is correct: `persisted`, `regressed_to_zero`, `sign_flip`, `insufficient_added17`.
+- Approximate p-value plus BH q-value is acceptable as a v0 sanity layer; disjoint replication remains the primary evidence.
+- v0.3 IDF pre-indexing is present and the 4450-pair run completed.
+- `UNKNOWN=0` confirms `infer_section_code` generalized to the expanded corpus.
+- Axis A guard passed the `1680/1684` test: 8 TEI-inconsistent same-address rows are excluded from primary ground truth.
+
+Main finding:
+
+- Multiple-comparison risk from RP-012 is now quantified: out of roughly 265 strong first18 correlations, only 69 persisted on added17, while 187 regressed to zero and 9 sign-flipped. About 74% of first18 signals were small-n artifacts.
+- The reliable Axis B shortlist should be `persisted ∩ all35 FDR(q<=0.10) = 28`, not the raw 69 persisted rows.
+- Of those 28 shortlist rows, 21 are size-controlled enough to be useful immediately: 15 entity metrics and 6 ratio metrics; 7 are raw `document_count` and remain size-confounded.
+- Survivors cluster around `ИОС5.5.1` / `ИОС5.1` with height, floors, and building volume, matching HC-006: height/floors imply pressure/equipment differences.
+
+Axis A:
+
+- Expanded-corpus same-address section gradient remains stable: Spearman `0.9137`, essentially matching the 18-object result.
+- The TEI-inconsistent same-address guard is now exercised in real data and behaves correctly.
+
+Limitations / not defects:
+
+- The 28 high-confidence Axis B candidates are still from one organization and small subset sizes, so they are candidate signals, not final findings.
+- Raw `document_count` rows need page-count control or partial correlation before interpretation.
+- `tei_norm_apartments_count` rows with `n=4` should be ignored for substantive claims.
+- `page_signature`-derived metrics remain strictness-prone diagnostics until near-match/bucketing exists.
+
+Reviewer answers:
+
+- Q1: disjoint replication semantics are correct.
+- Q2: taxonomy is acceptable; headline should use the 28-row `persisted ∩ FDR` shortlist.
+- Q3: p-value plus BH is enough for v0 because replication is primary.
+- Q4: Axis A guard behavior satisfies the `1680/1684` test.
+- Q5: next priority is partial correlation / page-count control for Axis B, then near-match page bucketing.
+
+Evidence:
+
+- `docspectrum@c8762e2..2341727`
+- verified replication code and `axis_b_replication_v0.csv`
+- persisted `69`, persisted ∩ FDR `28`
+- eval `0.9137`, guard `8` excluded
+- coverage `UNKNOWN=0`
