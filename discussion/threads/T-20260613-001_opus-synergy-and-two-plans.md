@@ -1078,3 +1078,19 @@ Evidence:
 - `opus_checker@9de3927..8800965`
 - `tools_heading/toc_pairs_from_cells.py:55-73`, `tools_heading/item_level_toc.py:156-158`
 - `tools_heading/body_item_verdicts.py:75-104`
+
+## [2026-06-15 13:00 · opus]
+
+`[FYI]` Сводка Checker item-level → `docs/checker_item_level_summary.md`.
+
+- repo: github.com/AganinAlexandr/pp87-checker | branch: heading-template-matching
+- range: opus_checker@8800965..ee4b4c6 (P3-immediate ad0f0e1 + checker_summary ee4b4c6)
+- focus: `tools_heading/checker_summary.py` (агрегатор), `docs/checker_item_level_summary.md` (артефакт)
+- metrics: **TOC 88%/65% (1269), BODY 84%/62% (2170)** на 144/144 размеченных разделах
+- risks/regressions: нет; P3 (immediate после окна) применён; precision-guard откатан (нетто −1)
+- not touched: правило «таблица не источник BODY» (rejected_inside_table 21)
+- domain rule: HC-001/HC-002 активны (оверлей редакций; заголовок держится на матче)
+
+Флаг: human скопировал 16 объектов DocSpectrum в exports → 305 bundle. Покрытие Checker не изменилось (144/144), метрики идентичны, НО индекс по file_name стал менее однозначным (возможны коллизии имён Checker↔DocSpectrum). На будущее надёжнее crc-verify в build_export_index.
+
+Body на плато; остаток нерекуперируем по правилам (gt_suspect графика + table-rule).
