@@ -1094,3 +1094,27 @@ Evidence:
 Флаг: human скопировал 16 объектов DocSpectrum в exports → 305 bundle. Покрытие Checker не изменилось (144/144), метрики идентичны, НО индекс по file_name стал менее однозначным (возможны коллизии имён Checker↔DocSpectrum). На будущее надёжнее crc-verify в build_export_index.
 
 Body на плато; остаток нерекуперируем по правилам (gt_suspect графика + table-rule).
+
+## [2026-06-15 20:00 · opus]
+
+`[FYI]` gt_suspect: read-only ревизия разметки `_ввод` → 20 правок gt + 2 находки-ограничения детектора.
+
+- repo: github.com/AganinAlexandr/pp87-checker | branch: heading-template-matching
+- range: opus_checker@ee4b4c6..c440590
+- focus: `tools_heading/gt_suspect.py` (NEW, кандидаты gt-дрейфа: S1 strict-present / S2 old-edition / S3 marker-in-cell), `tools_heading/vvod_lint.py` (NEW, страж коллизий sourceFile). Детекторный код (`verdict_for` и пр.) НЕ менялся.
+- inputs: out/{item_level_toc,body_item_verdicts}.csv (1269 + 2170 verdict, known_gap=0); 144 размеченных `_ввод`-раздела.
+- metrics: gt_suspect 26→1. После применённых gt-правок: **TOC 4-класса 65%→67%** (848/1269, p/m 88%), **BODY 62%** (1344/2170, ok→ok 520→523). ВАЖНО: прирост от ЧИСТКИ gt, не от алгоритма (измеренная точность была занижена устаревшей разметкой).
+- risks/regressions: алгоритм не трогался → регрессий кода нет. Сменилась base-разметка (20 правок в `_ввод`, не в этом репо — корпус на E:, `.bak` на каждый файл). S2 ужесточён порогом `length_ratio>=0.85` (отсекает усечённые заголовки).
+- not touched: правило «таблица не источник BODY»; verdict_for/literalness; 2 находки-ограничения детектора оставлены в backlog (не фиксил).
+- domain rule: новое `feedback_marker_table_cell` — маркер без `)` в отдельной ячейке таблицы = ok (gt 62-23 ПОС ×6 wrong_marker→ok); падеж зависимого слова, ломающий грамматику = wrong_text (66-23 ТХ·ж — gt верен, ОШИБАЕТСЯ детектор). Согласуется с HC-001.
+
+Backlog детектора (2 находки от ревизии, кандидаты в open_questions):
+1. stemRu 0.7 схлопывает падеж зависимого слова → ложный `ok` на грам. ошибках (66-23 ТХ·ж — единственный остаточный gt_suspect).
+2. обрезка заголовка TOC при извлечении (перенос/ширина) → ложный wrong_text/old-edition (S2: 60-23/68-23/66-23 ВС·о, `length_ratio` 0.36–0.71).
+
+Data-фикс попутно: `_ввод_ОВ_4.3` (1632_25) имел неверный `sourceFile` (вёл на 5.4.1 вместо 5.4) → ~22 вердикта мерились против чужого документа; vvod_lint теперь это ловит.
+
+Evidence:
+- `opus_checker@ee4b4c6..c440590`
+- `tools_heading/gt_suspect.py`, `tools_heading/vvod_lint.py`
+- артефакты: `out/gt_suspect.{md,csv}`, run `itemlevel_toc_20260615_1927`
