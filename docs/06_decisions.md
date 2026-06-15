@@ -121,3 +121,27 @@
 Ссылки:
 - `projects/docspectrum/README.md`
 - `registries/repositories_registry.csv`
+
+## DEC-20260615-006: crc32-адресация bundle (doc_<crc32>) как канон связи
+
+Статус: accepted
+Дата: 2026-06-15
+
+Контекст:
+Папки выгрузок `pdf-structure-explorer` ранее переименованы с random-чисел на `doc_<crc32>` именно ради простой и надёжной связи документ↔bundle. Общий каталог `exports` мутируется параллельно (Checker + DocSpectrum, 440+ bundle, рост): резолв по `file_name` нестабилен — коллизии имён (один file_name у разных crc), а также временная архивация/добавление сдвигают результат (наблюдалось: знаменатель Checker 1269→1215 между прогонами). Codex в параллельном чате независимо столкнулся с той же задачей адресации.
+
+Решение:
+Канонический способ связи раздел↔bundle — **crc32 содержимого исходного PDF** → папка `doc_<lower(crc32)>`:
+- crc32 считается от ИСХОДНОГО PDF (стабилен, не зависит от мутаций exports);
+- ключ `doc_<crc32>` уникален → новые выгрузки с тем же именем НЕ перекрывают;
+- поиск bundle РЕКУРСИВНЫЙ (вкл. `exports/архив/...`) → переживает архивацию;
+- `file_name`/`document_links` — лишь fallback.
+
+Реализация Checker: `tools_heading/toc_pairs_from_cells.py::bundle_path(crc)` (+ `_bundle_index`, рекурсивный); `item_level_toc.py::resolve_by_crc/local_pdf_by_name`; резолв в `item_level_toc`/`body_item_verdicts` теперь crc-FIRST (commit opus_checker@18a400d). Фиксация тестсета: `build_checker_manifest.py` → объект+раздел+ПОДРАЗДЕЛ→crc32→bundle.
+
+Последствия:
+Резолв детерминирован и иммунен к параллельной работе в общем exports (подтверждено: TOC 822/1215 стабильно run-to-run). Остаточный риск — физическое удаление нужного `doc_<crc>` (тогда — снапшот в приватный каталог). Конвенция общая для Checker и DocSpectrum.
+
+Ссылки:
+- `opus_checker@18a400d` (pp87-checker, branch heading-template-matching)
+- `tools_heading/toc_pairs_from_cells.py`, `tools_heading/build_checker_manifest.py`
