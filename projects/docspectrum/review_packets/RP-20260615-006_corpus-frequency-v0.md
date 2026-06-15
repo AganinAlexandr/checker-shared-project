@@ -1,6 +1,6 @@
 # RP-20260615-006: Corpus frequency typicality v0
 
-Status: pending
+Status: reviewed
 Project: DocSpectrum
 Generator: codex
 Reviewer: opus
@@ -75,3 +75,36 @@ Evidence:
 - note: `notes/corpus_frequency_v0.md`
 - generated summary: `E:/output/DocSpectrum/corpus_frequency_v0_18_n2/corpus_frequency_v0.json`
 - syntax check: `python -B -m py_compile E:\repos\DocSpectrum\tools\build_corpus_frequency_v0.py`
+
+## [2026-06-15 15:05 MSK - opus via human]
+
+`[AGENT-OK]` Вердикт: чистая, верно реализует HC-004 (section-vs-library DF, библиотека сущностей, 3 корзины + low_population guard). Codex заранее закрыл часть моих прежних замечаний. Блок-багов нет.
+
+Сильное, подтверждаю:
+
+- DF = число разных документов с сущностью, не occurrence — корректно.
+- Сырые `section_df` / `df_ratio` / `idf` + `global_df` / `ratio` / `idf` сохранены, корзина производная, значит порог можно пересчитать без перепрогона.
+- Невалидированный `0.50` безопасен именно потому, что ratio не зашит.
+- `ё→е` добавлен; `section_documents` / `section_objects` per entity = мост к source/fragment matching.
+- hash-only соблюден; домен в ядро не течет (`CORE_DOMAIN_LEAK` чист).
+
+Находки:
+
+- `normalize_text` разошелся между инструментами: в `build_corpus_frequency_v0` есть `ё→е`, в `compare_pairs_v0_2.normalize_text` нет. Одноименная функция дает разные хэши, поэтому текстовые сущности оси v0.2 и corpus-frequency не хэш-совместимы. Сейчас это не ломает отдельные артефакты, но это латентная корректностная проблема при любой сшивке хэшей. Рефактор общих хелперов теперь корректностный, не косметика: вынести `normalize_text` / `sha1` / `word_shingles` / `text_tokens` в общий модуль, чтобы все текст-хэширование совпадало. Топ-приоритет перед добавлением сущностей.
+- Originality интерпретировать на уровне сегментов, не шинглов. Замер: ИОС5.4.1 segment-originality `0.041` vs shingle `0.007` (6x), СМ `0.071` vs `0.019`. Шингл-originality занижает самостоятельность; сегмент = "предложение уникально", шингл = частичное/фразовое переиспользование. Данные уже это поддерживают, нужна интерпретационная пометка и будущая схема должна брать originality прежде всего по segment.
+- Семантика `typical` при одном орг-корпусе приемлема, потому что сырой `df_ratio` сохранен. При появлении кросс-орг корпуса добавить org-scoped DF: "типично для организации, но редко между организациями" = электронный почерк. `global_df` уже дает частичный кросс-секционный масштаб.
+
+Ответы на open-вопросы:
+
+- Q1: `text_segment` + `text_word_shingle` достаточно для первой библиотеки сущностей; следующими добавить структурные сигнатуры page/table layout/content и table-cell text.
+- Q2: `typical/shared_rare/original/low_population` — верная таксономия; в схеме хранить и сырой `df_ratio`/`idf`, и производную корзину; маппинг на `comparison_result` §16/§17.
+- Q3: `0.50` приемлемо как experiment-placeholder из-за сохраненного ratio; калибровка после eval; org-scope позже.
+- Q4: сначала достроить библиотеку сущностей структурными/табличными сущностями в corpus-frequency; интеграция DF в pairwise после этого.
+- Q5: рефактор перед новыми сущностями нужен сейчас, и он корректностный.
+
+Evidence:
+
+- review relay from Opus, 2026-06-15
+- `docspectrum@d477338..80a0d35`
+- verified `section_typicality_v0.csv` (segment vs shingle originality)
+- verified `normalize_text` divergence between v0.2 and corpus-frequency
