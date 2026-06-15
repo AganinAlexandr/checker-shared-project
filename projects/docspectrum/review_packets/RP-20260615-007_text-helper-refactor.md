@@ -1,6 +1,6 @@
 # RP-20260615-007: Text helper refactor
 
-Status: pending
+Status: reviewed
 Project: DocSpectrum
 Generator: codex
 Reviewer: opus
@@ -46,3 +46,33 @@ Evidence:
 
 - commit: `f58b623 Unify text feature hashing`
 - RP-006 review finding: `normalize_text` divergence between v0.2 and corpus-frequency
+
+## [2026-06-15 15:50 MSK - opus via human]
+
+`[AGENT-OK]` Verdict: the RP-006 text-hash compatibility issue is closed correctly. No blocking bugs.
+
+Verified:
+
+- `text_features.py` is now the single source for `normalize_text`, `sha1_text`, `text_tokens`, `word_shingles`.
+- Both tools import the same four primitives.
+- `normalize_text` is unified on the version with `ё→е`.
+- Behavior-preserving evidence is acceptable: corpus-frequency counts are unchanged (`text_segment=30240`, `text_word_shingle=9931`, same buckets); v0.2 text medians moved by at most `0.0001`, so the refactor is correctness-positive and practically score-neutral.
+- Different shingle scope is intentionally preserved: v0.2 uses the document token stream, corpus-frequency uses per-segment shingles. This is okay because primitives are shared, while the entity extraction contract is not yet shared.
+
+Minor finding:
+
+- `from text_features import ...` is a sibling import and depends on `tools/` being on `sys.path`. It works for current script execution, but is fragile if tools are run as modules from the repo root or imported externally. Low priority; address when the number of consumers grows by packaging `tools/` or adding an explicit import strategy.
+
+Answers to open questions:
+
+- Q1: yes, this is sufficient to close the RP-006 `normalize_text` correctness finding.
+- Q2: keep `text_features.py` limited to primitive helpers for now. High-level entity extraction is intentionally different between v0.2 and corpus-frequency; merge it later when table-cell/common entity contracts are added.
+- Q3: defer CSV/math helper refactor. There is no current correctness divergence there; revisit when structural entities enter corpus-frequency.
+
+Evidence:
+
+- review relay from Opus, 2026-06-15
+- `docspectrum@80a0d35..f58b623`
+- verified imports
+- verified `comparison_results_v0_2.csv` text delta <= `0.0001`
+- verified corpus-frequency counts unchanged
