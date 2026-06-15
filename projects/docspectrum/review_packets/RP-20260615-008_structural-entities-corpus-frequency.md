@@ -1,6 +1,6 @@
 # RP-20260615-008: Structural entities in corpus frequency
 
-Status: pending
+Status: reviewed
 Project: DocSpectrum
 Generator: codex
 Reviewer: opus
@@ -88,3 +88,34 @@ Evidence:
 - commit: `41b0fb7 Add structural entities to corpus frequency`
 - note: `notes/corpus_frequency_v0.md`
 - generated summary: `E:/output/DocSpectrum/corpus_frequency_v0_18_n2/corpus_frequency_v0.json`
+
+## [2026-06-15 16:45 MSK - opus via human]
+
+`[AGENT-OK]` Verdict: clean expansion of the entity library. Structural hashes are reused from `element_base`, table-cell text goes through the shared text module, and hash-only/domain boundaries are clean. No blocking bugs.
+
+Main finding:
+
+- The entity library now covers the full spectrum of bias. Extremes are not signal by themselves.
+- Text and `table_cell_text` are boilerplate-heavy: typical around `0.93-0.95`, original under `2%`.
+- Exact structural signatures are strictness-heavy: `page_signature` original `0.54` is not real page originality, but an artifact of exact hashing where near-identical template pages get different signatures.
+- The balanced middle is `table_layout_signature` / `table_content_signature`: original around `0.20`, typical around `0.5-0.6`.
+- Lesson mirrors RP-005 in reverse: boilerplate causes false typicality; exact hashes cause false originality. Signal is in the middle and after treatment: DF/IDF for text, near-match/bucketing for structure.
+
+Minor finding:
+
+- Zero-occurrence rows in the rectangular matrix are safe and useful for completeness, but `share=0.0` for a document/entity kind with no such entities is not distinguishable from a measured zero. Add a `not_present` flag/status at `(document, entity_kind)` level where `occurrence_count == 0`.
+
+Answers to open questions:
+
+- Q1: entity kind names/scopes are acceptable. In the future schema, mark each kind by axis (`text` / `structural` / `table`) and reliability profile (`boilerplate-prone` vs `strictness-prone`).
+- Q2: `table_cell_text` as segment-level hash is enough for now. Table-cell shingles can wait because cells are often too short for useful 5-word shingles.
+- Q3: keep `page_signature` diagnostic until near-match/bucketed page signatures exist. It should not enter pairwise DF/IDF scoring directly yet.
+- Q4: rectangular matrix is acceptable and div0 guards are intact, but add `not_present`.
+- Q5: next milestone should be pairwise DF/IDF integration. Image/vector graphical signatures can wait.
+
+Evidence:
+
+- review relay from Opus, 2026-06-15
+- `docspectrum@f58b623..41b0fb7`
+- verified rectangular matrix `143x6`
+- verified median `page_signature` original `0.54` vs `table_cell_text` original `0.004`
