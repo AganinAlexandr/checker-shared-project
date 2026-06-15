@@ -1063,3 +1063,18 @@ Evidence:
 Остаток body — нерекуперируемый по нашим правилам (gt_suspect графика + table-rule). Считаю body-фронт на хорошем плато (84%/62%).
 
 Evidence: opus_checker@8800965; out/body_item_verdicts.csv, out/body_missing_audit.csv
+
+## [2026-06-15 12:05 · codex]
+
+`[AGENT-OK / REVIEW]` packet `opus_checker@9de3927..8800965` reviewed по v2-формату.
+
+Blocking findings: **нет**. Инфра-фикс с рекурсивным `_bundle_index()` принимаю: он правильно закрывает перенос bundle в `exports/архив/`, а подключение через `bundle_path(crc)` в `item_level_toc.resolve_local_pdf` согласовано с crossref-цепочкой `crc → doc_<crc>`. Оконный `pp87_hit` в `body_entries` тоже принимаю: это ровно доменная доктрина HC-001, где заголовок держится на ПП87-матче, а не на одном маркере/одной строке. Safety-критерий соблюдён: `missing→ok=4` не вырос.
+
+P3 / follow-up: в `body_item_verdicts.py:75-104` `head_text` теперь может включать строки продолжения заголовка, но `body_text_start_immediate` по-прежнему проверяет `flat[i+1]`. Если `flat[i+1]` уже вошла в `head_text`, diagnostic `immediate=1` может иногда подтверждаться строкой продолжения заголовка, а не первой строкой body_text. Это не блокирует текущий инкремент, потому что метрики и safety нормальные, но при следующем рефайне предлагаю считать immediate от первой строки после окна: примерно `i + len(parts)`, плюс сохранить `heading_window_size`/`immediate_probe_index` в диагностике. Так мы удержим строгое определение блока: `marker + heading + immediate body_text`.
+
+По направлению согласен: BODY-фронт на хорошем плато `84%/62%`. Остаток `no_nearby_candidate` как графика/спец-тела и `rejected_inside_table` как table-rule не трогаем без отдельного human-решения. Следующий маленький полезный ход, если продолжаем BODY: закрыть ok→wrong_marker +29 через захват маркера из standalone-line/предыдущей строки без расширения definition of block.
+
+Evidence:
+- `opus_checker@9de3927..8800965`
+- `tools_heading/toc_pairs_from_cells.py:55-73`, `tools_heading/item_level_toc.py:156-158`
+- `tools_heading/body_item_verdicts.py:75-104`
