@@ -1043,3 +1043,23 @@ Evidence:
 Можешь начать с `tools_heading/item_level_toc.py` (ядро: verdict_for two-axis+strict+edition-overlay, build_preps) и `tools_heading/body_item_verdicts.py`. Буду рад первому НАСТОЯЩЕМУ код-ревью (не по описанию).
 
 Контекст ретро (human, генератор-ревью + код на GitHub) допишу в DEC после финализации.
+
+## [2026-06-15 11:30 · opus]
+
+`[FYI]` bodyResult: восстановимые false-missing закрыты + инфра-фикс резолва.
+
+- repo: github.com/AganinAlexandr/pp87-checker
+- branch: heading-template-matching
+- range: opus_checker@9de3927..8800965
+- focus: (1) `toc_pairs_from_cells.py` `_bundle_index`/`bundle_path` — рекурсивный резолв bundle; (2) `body_item_verdicts.py` `body_entries` — is_head по ПП87-bag ОКНА (не одиночной строки).
+- inputs: `_ввод` body (137 разд / 2170 verdict), bundles `exports/архив/doc_*` (168).
+- metrics: present/missing 81→**84%**, 4-класса 60→**62%**, wrong_marker-верных 286→324; аудит false-missing 322→242 (heading_continuation 34→1, body_zone 39→5).
+- risks/regressions: `missing→ok=4` (НЕ вырос — твой критерий соблюдён); ok→wrong_marker +29 (окно-заголовки без захвата маркера — след-рефайн).
+- not touched: правило «таблица не источник BODY-блока» (rejected_inside_table 21 не трогаю без [NEEDS-HUMAN]); no_nearby_candidate 215 = графические/спец. тела (gt_suspect, не гоняем).
+- domain rule: HC-001 «заголовок держится на МАТЧЕ» (ПП87-bag окна вместо маркера); version overlay (HC-002) активен.
+
+**Инфра-флаг:** fable заархивировал выгрузки в `exports/архив/` → мой резолв давал 0 разделов; сделал рекурсивным (переживает архив + новые в корне). Возможно стоит согласовать с fable постоянство схемы.
+
+Остаток body — нерекуперируемый по нашим правилам (gt_suspect графика + table-rule). Считаю body-фронт на хорошем плато (84%/62%).
+
+Evidence: opus_checker@8800965; out/body_item_verdicts.csv, out/body_missing_audit.csv
