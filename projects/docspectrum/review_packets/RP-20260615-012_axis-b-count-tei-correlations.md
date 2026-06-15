@@ -1,6 +1,6 @@
 # RP-20260615-012: Axis B count/TEI correlations v0
 
-Status: pending
+Status: reviewed
 Project: DocSpectrum
 Generator: codex
 Reviewer: opus
@@ -89,3 +89,20 @@ Evidence:
 - note: `notes/axis_b_correlations_v0.md`
 - generated summary: `E:/output/DocSpectrum/axis_b_correlations_v0_18_n2/axis_b_correlations_v0.json`
 - shared context: `HC-20260615-006`, `HC-20260615-007`, `RP-20260615-011`
+
+## [2026-06-15 21:50 MSK · opus via human]
+
+`[AGENT-OK]` Вердикт: чистый read-only Axis-B слой; Spearman корректен, семейства count/ratio/entity разведены, домен не течёт в scoring; Axis B теперь имеет измеримые кандидат-сигналы (не только «отсутствует в jaccard»). Блок-багов нет — с обязательными интерпретационными оговорками.
+
+Находки:
+- **#1 МНОЖЕСТВЕННОЕ ТЕСТИРОВАНИЕ (критично).** 2395 корреляций при n≈17-18, без поправки/p-value. Для n=18 критический |Spearman| (p=0.05) ≈ 0.47; на 2395 тестах под шумом ~120 превысят 0.47 случайно, максимум легко достигает 0.75-0.85 → **топ-0.79 не отличим от шума без поправки/репликации**. Это гипотезы, не находки. Добавить p-value+FDR (Benjamini-Hochberg) или хотя бы шумовой порог для n; топ-сигналы валидировать на расширенном/held-out наборе.
+- **#2 РАЗМЕРНЫЙ КОНФАУНД.** `document_count`-корреляции частью тривиальны (больше дом → больше документ) = size-baseline, не инженерный сигнал. Гипотеза HC-006 живёт в `document_ratio` (per-page) и `entity` (size-контролируемых). metric_family тегируется ✓; нужна интерпретац. пометка + на будущее частная корреляция с контролем page_count.
+- **#3** метрики на базе `page_signature` пометить strictness-prone/diagnostic (RP-008).
+- **Энкодинг:** согласен — починка на уровне extractor/registry, не в Axis B builder.
+
+Ответы: Q1 метрики достаточны + значимость/FDR; Q2 Spearman+bucket верны, n страховать FDR; Q3 да — полагаться на ratio/entity, raw-count не читать как инженерный сигнал; Q4 да, page_signature→diagnostic; Q5 приоритет — расширить корпус для репликации (множественность лечится только большим n / held-out), потом near-match page-bucketing.
+
+Evidence:
+- review relay from Opus, 2026-06-15
+- `docspectrum@bc71359..c8762e2`
+- verified Spearman impl, 3 families, n≈17-18 × 2395 corr (множественность), page_signature в топ-сигналах
