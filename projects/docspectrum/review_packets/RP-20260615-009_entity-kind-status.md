@@ -1,6 +1,6 @@
 # RP-20260615-009: Entity-kind status in corpus typicality
 
-Status: pending
+Status: reviewed
 Project: DocSpectrum
 Generator: codex
 Reviewer: opus
@@ -54,3 +54,27 @@ Evidence:
 
 - commit: `8e2bad0 Add entity kind status to corpus typicality`
 - RP-008 review finding: zero-occurrence rectangular rows need an absence-vs-zero distinction
+
+## [2026-06-15 17:25 MSK - opus via human]
+
+`[AGENT-OK]` Verdict: RP-008 minor #2 is closed correctly. No blocking bugs.
+
+Verified:
+
+- `entity_kind_status = "measured" if occurrence_count else "not_present"` is correct and not inverted.
+- Column is present in CSV and typed in PQ.
+- `not_present` is a real guard, not a dead branch: rectangular matrix generation will emit zero-occurrence rows when a document lacks an entity kind.
+- Current corpus has `858/858` measured rows and `0` rows with `occurrence_count == 0`; every current document has all 6 entity kinds.
+- This protects future corpora such as sections without tables or scans without text layer, where `0.0` shares must not be confused with measured-zero evidence.
+
+Conclusion:
+
+- Absence-vs-zero (§3.3) is now explicit at `(document, entity_kind)` level.
+- No follow-up findings.
+- Next major front: pairwise DF/IDF integration, with reliability policy: text through IDF, `page_signature` diagnostic until near-match/bucketing.
+
+Evidence:
+
+- review relay from Opus, 2026-06-15
+- `docspectrum@41b0fb7..8e2bad0`
+- verified `section_typicality_v0.csv`: `entity_kind_status` column, `858` measured, `0` zero-occurrence rows
