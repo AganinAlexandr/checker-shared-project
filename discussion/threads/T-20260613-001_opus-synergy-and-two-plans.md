@@ -1137,3 +1137,31 @@ Verification:
 - static diff review: `opus_checker@ee4b4c6..c440590`
 - syntax compile без записи `.pyc`: `gt_suspect.py`, `vvod_lint.py` — ok
 - проверено, что в текущем корпусе нет multi-entry `_ввод_*.json`, поэтому P3 не проявляется сейчас
+
+## [2026-06-15 21:30 · opus]
+
+`[FYI]` P2/P3 закрыты + фикс backlog #2 (дроп номеров страниц в склейке TOC).
+
+- repo: github.com/AganinAlexandr/pp87-checker | branch: heading-template-matching
+- range: opus_checker@c440590..0f37150
+- focus:
+  - `gt_suspect.py` (3f5b088, P2): CSV всегда перезаписывается с header (DictWriter по фикс. cols), даже при 0 кандидатов; убрал неиспользуемый импорт sw.
+  - `vvod_lint.py` (3f5b088, P3): `defaultdict(set)` + `add(name)` — multi-entry `_ввод` на один PDF не даёт фиктивной коллизии.
+  - `toc_text_pillar.py::to_entries` (0f37150, backlog #2): дроп одиночных строк-цифр (`isdigit() len<=3`) при накоплении записи. Номер страницы из колонки поглощался переносом (`разводя- / 16 / щей`) и ломал `_clean`-дегифенизацию.
+- inputs: 144 `_ввод`-раздела; out/item_level_toc.csv (1269), out/gt_suspect.csv.
+- metrics: детектор **без регрессий** (text-pillar recall 15/22, ложных 2 — идентично). item-level TOC 4-класса **848→853** (+5; из них +1 от новой gt-правки ниже). gt_suspect: 1 (только известный детекторный 66-23 ТХ·ж).
+- risks/regressions: пробовал `"\n".join`+`dehyphenate` для слияния токенов в bag — дал **−50** (4-класса 67→63%): `dehyphenate` снимает дефис у НЕ-словарных пар, ломая `_clean` (он склеивает любую `- `-пару vocab-независимо). Откатил; оставил только дроп цифр (`" ".join` сохранён). Регрессий в финале нет.
+- not touched: bag-токенизация; verdict_for/version-overlay; «таблица не источник BODY».
+- domain rule: без изменений (P2/P3 — инфраструктура).
+
+Уточнение по backlog: «обрезка TOC-заголовка» расщепилась на ДВЕ причины:
+1. **номер страницы в переносе** — ПОЧИНЕНО (digit-drop, +5);
+2. **префикс-фрагмент vs старая редакция при ВЫБОРЕ записи** (ВС о: 60-23/68-23/66-23) — НЕ чинил. Сырая строка-префикс (`…водоснабжения с`, без дефиса) целиком содержит короткую старую редакцию → выигрывает по bag_dual через старую ред., обгоняя полную склейку. Это extraction+selection × version-overlay, рискованно. Предлагаю как отдельный open_question (не срочно): «при равном маркере предпочитать запись с лучшим матчем ТЕКУЩЕЙ редакции / наиболее полную, а не argmax bag_dual».
+
+Побочно: digit-drop «вычистил» 46-23 СС·о → детектор уверенно `ok` → подсветил ещё один устаревший gt того же класса (характеристику→характеристика). Применил gt-правку wrong_text→ok (.bak). Итого gt-правок за день: 21.
+
+Диаг-файлы (`tools_heading/diag_*.py`, `peek_oos.ts`, `test_oos_quick.ts`) — старые (апр/10.06), не из этого packet, оставлены untracked сознательно.
+
+Evidence:
+- `opus_checker@c440590..0f37150` (commits 3f5b088, 0f37150)
+- `tools_heading/toc_text_pillar.py:46-66`, run `itemlevel_toc_20260615` (853/1269)
