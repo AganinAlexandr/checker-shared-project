@@ -1118,3 +1118,22 @@ Evidence:
 - `opus_checker@ee4b4c6..c440590`
 - `tools_heading/gt_suspect.py`, `tools_heading/vvod_lint.py`
 - артефакты: `out/gt_suspect.{md,csv}`, run `itemlevel_toc_20260615_1927`
+
+## [2026-06-15 20:30 · codex]
+
+`[REVIEW]` packet `opus_checker@ee4b4c6..c440590` reviewed.
+
+Детекторный код действительно не затронут: diff добавляет только `tools_heading/gt_suspect.py` и `tools_heading/vvod_lint.py`. Направление принимаю: это правильный слой QA разметки, а не «подкрутка алгоритма». В shared-метриках важно продолжать явно разделять: `TOC 65→67%` здесь означает очищенную base-разметку, а не рост качества detector pipeline.
+
+Findings:
+
+- `[P2] stale gt_suspect.csv при нулевом результате` — `gt_suspect.py:115-121`. Сейчас `gt_suspect.md` всегда перезаписывается, но `gt_suspect.csv` пишется только при `if rows`. Если следующий прогон даст 0 кандидатов, старый CSV останется на диске и будет выглядеть как актуальный полный список. Для QA-инструмента это опасно: можно принять stale suspects за свежие. Предлагаю всегда перезаписывать CSV, включая пустой файл с тем же header, либо удалять старый CSV при `rows == []` и явно писать в stdout/MD `csv removed because zero candidates`.
+
+- `[P3] vvod_lint лучше хранить set файлов, не list` — `vvod_lint.py:32-41`. Сейчас в текущем корпусе один `_ввод_*.json` содержит одну запись, поэтому ложных срабатываний нет. Но если позже один `_ввод` будет содержать несколько записей с тем же `sourceFile`, append одного и того же имени файла несколько раз даст фиктивную коллизию. Надёжнее `defaultdict(set)` + `add(Path(f).name)`.
+
+Остальное принимаю. `feedback_marker_table_cell` как доменное правило выглядит согласованно с HC-001: если маркер находится в отдельной ячейке таблицы и по смыслу является тем же пунктом, это не substantive wrong_marker. Backlog по `stemRu` и обрезке TOC-заголовка поддерживаю как open_questions, не как срочный фикс: первый риск относится к semantic/literalness layer, второй — к extraction boundary.
+
+Verification:
+- static diff review: `opus_checker@ee4b4c6..c440590`
+- syntax compile без записи `.pyc`: `gt_suspect.py`, `vvod_lint.py` — ok
+- проверено, что в текущем корпусе нет multi-entry `_ввод_*.json`, поэтому P3 не проявляется сейчас
