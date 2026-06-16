@@ -21,7 +21,7 @@
 | TSK-003 | Связь данных | Physical atoms -> Checker atoms | active | codex/opus | `contracts/pdf_structure_integration.md` | Нужна первая реализация `atom_bindings.csv` / `normalized_atoms.csv` |
 | TSK-004 | TOC | Детектор пар на ячейках explorer | done | opus | run `opus_tocpairs_20260613_0410`, `opus_checker@7ff5d21` | Все 3 ветки §6.2 ок; тех-долг полей закрыт (raw_row_text/marker/heading/page_ref раздельно); детектор закоммичен 7ff5d21 |
 | TSK-011 | TOC | RECALL содержания: разворот на ПП87-матч (без №стр) | done | opus | run `recall_v3_20260613`+`blind_sweep`, `opus_checker@816c425` | UNION recall 70%(10)→**88%(23/26)**. Blind sweep 96 bundle: переобучения нет (late 2/84, anchor-only 4/84). max_gap=1 accepted-for-experiment. Заморожено. Known gaps: ООС/СС scope, ЭС-ИОС1 табличное, 2 late-false TOC |
-| TSK-012 | Item-level | present/missing/wrong против `_ввод`/`_тест` | review | opus | `_ввод_*.json`, `opus_checker@18a400d`, `docs/checker_item_level_summary.md` | **TOC 88% p/m (68% 4-класса), BODY 84% p/m (62%)** на закреплённом 143/143 тестсете. Двухосевой verdict (текст/маркер) + версионный оверлей (2 ред.) + strict-слой. QA-петля `gt_suspect`/`vvod_lint` (21 правка gt). Версионный выбор записи (DEC open_q#5). Подплан добивки → ниже |
+| TSK-012 | Item-level | present/missing/wrong против `_ввод`/`_тест` | review | opus | `_ввод_*.json`, `opus_checker@3016202`, `runs_registry:itemlevel_toc_20260617` | **TOC 90% p/m (70% 4-класса, 139 разд/1414), BODY 84% p/m (62%, 2170)** на crc-pinned 143/143. Двухосевой verdict + версионный оверлей + strict-слой. **scope-корректность** (normalize ИОС5.N/ПЗУ→СПОЗУ + scope из имени `_ввод`): исправлены 66-23 ТХ/68-23 ОДИ (мерили против чужого ПП87), no_scope 21→5 (только вне-ПП87). QA-петля `gt_suspect` (28 правок gt). gt_suspect=1 (принятый лимит ТХ·ж). Осталось: приёмка human |
 | TSK-005 | Evaluation | `commons/eval/eval_set.csv` | todo | opus | `E:\commons\checker-shared-project` | Нужен базовый набор разделов/CRC/наличие GT |
 | TSK-006 | Шаг 1.1 | Проверка существенности битой кодировки | todo | TBD | `docs/01_plan.md`, `reason_codes.md` | Нужны правила подсчета локальной/существенной битой кодировки |
 | TSK-007 | Шаг 1.2 | Поиск и отсечение титульной зоны | todo | TBD | `docs/01_plan.md` | Нужны признаки обложек/титулов и связь с Explorer/Checker |
@@ -42,10 +42,11 @@
 ## Подпланы активных задач (Checker, обновлено 2026-06-16, opus)
 
 ### TSK-012 (review → done): добивка item-level
-- **scope-пробелы**: `scope_ТКР/ИЛО/ППО.json` пусты (0 пунктов) → 12-23 ТКР/ИЛО не измеряемы. Решить: есть ли у этих типов ПП87-требования? Если нет — ввести класс «вне ПП87» (раздел/РД) и исключать из знаменателя ЯВНО, не молча.
-- **TOC без аннотации**: ряд разделов есть в BODY, но не в TOC (нет `tocResult` или TOC collapsed) — дозаполнить разметку TOC либо пометить kg с причиной.
-- **остаточный gt_suspect = 1**: 66-23 ТХ·ж (stemRu схлопывает падеж зависимого слова) — детекторный лимит, принят как редкий (open_q методы#6 отложен).
-- **критерий done**: метрики приняты human + перенос в `contracts/metrics_contract.md` и `registries/runs_registry.csv`.
+- ✅ **scope-корректность СДЕЛАНО** (opus_checker@3016202): шифры нормализованы (ИОС5.N/ПЗУ→СПОЗУ), scope из имени `_ввод`; 66-23 ТХ/68-23 ОДИ больше не мерят против чужого ПП87; no_scope 21→5. Истинно «вне ПП87»: ИЛО/ТКР/ППО (scope пуст) — теперь в явном списке с причиной.
+- ✅ **gt вычищен**: 28 правок за сессию; gt_suspect=1 (66-23 ТХ·ж — принятый детекторный лимит, open_q методы#6).
+- ✅ **метрики занесены**: `runs_registry:itemlevel_toc_20260617` / `body_item_20260617`.
+- ◻ **TOC без аннотации**: часть разделов в BODY, но не в TOC (нет `tocResult`) — дозаполнить или пометить kg (некритично для done).
+- ◻ **критерий done**: приёмка human (метрики TOC 70%/90%, BODY 62%/84% на 143/143).
 
 ### TSK-008 (Шаг 1.3): первый блок BODY
 - зафиксировать метрику первого блока на закреплённом 143/143 (`bodyPageStart` vs gt-начало body);
