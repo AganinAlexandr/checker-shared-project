@@ -17,11 +17,11 @@
 |---|---|---|---|---|---|---|
 | TSK-000 | Координация | Общий слой `checker-shared-project` | done | codex | `docs/`, `contracts/`, `registries/` | Каркас создан, git-коммиты есть |
 | TSK-001 | Координация | Append-only discussion channel | done | codex | `discussion/README.md`, `discussion/INDEX.md` | Канал создан, Opus может открыть первую нить |
-| TSK-002 | Связь данных | Раздел -> CRC32 -> `doc_<crc32>` -> explorer bundle | done | opus/codex | `contracts/pdf_structure_integration.md` | Используем `Elements_PDF_document_links.xlsx`, отдельный objects registry не нужен |
+| TSK-002 | Связь данных | Раздел -> CRC32 -> `doc_<crc32>` -> explorer bundle | done | opus/codex | `contracts/pdf_structure_integration.md`, `DEC-20260615-006` | Канон: crc32 контента → `doc_<crc32>`, рекурсивно (вкл. архив). crc-FIRST резолв (`opus_checker@18a400d`) → иммунитет к мутации общего exports. Тестсет закреплён manifest 143/143 (`build_checker_manifest.py`) |
 | TSK-003 | Связь данных | Physical atoms -> Checker atoms | active | codex/opus | `contracts/pdf_structure_integration.md` | Нужна первая реализация `atom_bindings.csv` / `normalized_atoms.csv` |
 | TSK-004 | TOC | Детектор пар на ячейках explorer | done | opus | run `opus_tocpairs_20260613_0410`, `opus_checker@7ff5d21` | Все 3 ветки §6.2 ок; тех-долг полей закрыт (raw_row_text/marker/heading/page_ref раздельно); детектор закоммичен 7ff5d21 |
 | TSK-011 | TOC | RECALL содержания: разворот на ПП87-матч (без №стр) | done | opus | run `recall_v3_20260613`+`blind_sweep`, `opus_checker@816c425` | UNION recall 70%(10)→**88%(23/26)**. Blind sweep 96 bundle: переобучения нет (late 2/84, anchor-only 4/84). max_gap=1 accepted-for-experiment. Заморожено. Known gaps: ООС/СС scope, ЭС-ИОС1 табличное, 2 late-false TOC |
-| TSK-012 | Item-level | present/missing/wrong против `_ввод`/`_тест` | active | opus | `_ввод_*.json`/`_тест.json`, `opus_checker@816c425` | Общая продуктовая метрика сближения. От детекта содержания → атрибуция пунктов ПП87. Стартует после заморозки TSK-011 |
+| TSK-012 | Item-level | present/missing/wrong против `_ввод`/`_тест` | review | opus | `_ввод_*.json`, `opus_checker@18a400d`, `docs/checker_item_level_summary.md` | **TOC 88% p/m (68% 4-класса), BODY 84% p/m (62%)** на закреплённом 143/143 тестсете. Двухосевой verdict (текст/маркер) + версионный оверлей (2 ред.) + strict-слой. QA-петля `gt_suspect`/`vvod_lint` (21 правка gt). Версионный выбор записи (DEC open_q#5). Подплан добивки → ниже |
 | TSK-005 | Evaluation | `commons/eval/eval_set.csv` | todo | opus | `E:\commons\checker-shared-project` | Нужен базовый набор разделов/CRC/наличие GT |
 | TSK-006 | Шаг 1.1 | Проверка существенности битой кодировки | todo | TBD | `docs/01_plan.md`, `reason_codes.md` | Нужны правила подсчета локальной/существенной битой кодировки |
 | TSK-007 | Шаг 1.2 | Поиск и отсечение титульной зоны | todo | TBD | `docs/01_plan.md` | Нужны признаки обложек/титулов и связь с Explorer/Checker |
@@ -38,6 +38,27 @@
 4. Параллельно создается `E:\commons\checker-shared-project\eval\eval_set.csv`.
 5. После первого прогона результат заносится в `registries/runs_registry.csv` и кратко отражается здесь.
 6. Отдельно запустить TSK-011: проверить, что текст внутри СПДС-рамки извлекается надежно, а штамп/внешние элементы не смешиваются с body.
+
+## Подпланы активных задач (Checker, обновлено 2026-06-16, opus)
+
+### TSK-012 (review → done): добивка item-level
+- **scope-пробелы**: `scope_ТКР/ИЛО/ППО.json` пусты (0 пунктов) → 12-23 ТКР/ИЛО не измеряемы. Решить: есть ли у этих типов ПП87-требования? Если нет — ввести класс «вне ПП87» (раздел/РД) и исключать из знаменателя ЯВНО, не молча.
+- **TOC без аннотации**: ряд разделов есть в BODY, но не в TOC (нет `tocResult` или TOC collapsed) — дозаполнить разметку TOC либо пометить kg с причиной.
+- **остаточный gt_suspect = 1**: 66-23 ТХ·ж (stemRu схлопывает падеж зависимого слова) — детекторный лимит, принят как редкий (open_q методы#6 отложен).
+- **критерий done**: метрики приняты human + перенос в `contracts/metrics_contract.md` и `registries/runs_registry.csv`.
+
+### TSK-008 (Шаг 1.3): первый блок BODY
+- зафиксировать метрику первого блока на закреплённом 143/143 (`bodyPageStart` vs gt-начало body);
+- блок = `marker + heading + immediate body_text`; оформить правило поглощения вложенного уровня (таблица/подзаголовок сразу после heading);
+- сравнение методов (TS `detectBodyPageStart` vs Python) — только ПОСЛЕ закрытия gates 1.1/1.2.
+
+### Шаг 1.1 (TSK-006): существенность битой кодировки
+- правило: 1-2 пункта → локальные замечания, проверка продолжается; >2 / существенная часть → общее замечание (Приказ 783) + ограниченный режим;
+- в коде уже есть `section_error="broken_encoding"` (порог >50) — формализовать в правило + reason_code + метрику на тестсете.
+
+### Шаг 1.2 (TSK-007): титульная зона
+- признаки обложек/титулов (обычно 2, при субподряде 4+); исключение зоны из пространства поиска первого блока;
+- сейчас работает НЕЯВНО через `bodyPageStart`/`tocPageEnd` (TS exact 24/26) — выделить в отдельный gate с собственной метрикой.
 
 ## Правило обновления
 
