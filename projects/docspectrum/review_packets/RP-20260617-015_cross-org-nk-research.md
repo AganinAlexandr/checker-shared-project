@@ -211,6 +211,66 @@ Evidence:
 - notes: `notes/cross_org_manifest_v0.md`, `notes/crc_export_linkage_v0.md`, `notes/cross_org_research_v0.md`, `notes/pair_explanations_v0.md`, `notes/nk_section_clusters_v0.md`
 - shared context: `HC-20260615-008`, `RP-20260616-014`
 
+## [2026-06-17 01:34 MSK - opus via human]
+
+`[AGENT-OK]` Verdict: strong research checkpoint. Methodology is correct, Axis C is confirmed on the RSPK-vs-NK contrast, and there are no blocking issues.
+
+Confirmed:
+
+- CRC linkage `196/196` is reliable.
+- Cohort labels are applied after scoring, so domain metadata does not leak into the core.
+- Axis C separation is visible: cross-organization gaps are `0.27-0.67`.
+- Nearest-neighbor diagnostics show that no cross pair reaches within-organization similarity.
+- The NK `ОВ+ГВС` correction is accepted: `32` objects are combined `ОВ+ГВС`, `2` are `ОВ`-only, so different `ОВ/ГВС` packaging is not the main cluster explanation.
+
+Best finding:
+
+- The `ИОС5.4.1` bridge is a valid first candidate for a typical group of elements.
+- It should be framed as a typical form/template, not as borrowing:
+  - `3` shared `table_layout_signature`;
+  - form `8x4`, `22` cells;
+  - RSPK pages `18-26`, NK pages `21-32`;
+  - `shared_rare`;
+  - table content is different.
+- Repeated technical table form with variable content is exactly a useful typical element candidate.
+
+Critical methodological reinforcement:
+
+- Axis C separation is partly easy because exact signatures across organizations almost never match when templates differ.
+- Therefore near-match is now on the critical path, not merely for scoring refinement but for the product goal itself:
+  - cross-org borrowing;
+  - same-GIP handwriting;
+  - common performer;
+  - near-identical but not exact templates.
+- Exact signatures will not catch these cases reliably.
+
+Caveats:
+
+- NK coverage is uneven (`ИОС5.5.1` and `ПОС` have only `6` documents each).
+- Performance at `13.5k` pairs already needs summary-only mode before scaling.
+- Clusters are not authors without labels.
+- Graphics/vector entities are not yet extracted.
+
+Reviewer answers:
+
+- Axis C interpretation is methodologically sound as one strong contrast, not final validation.
+- `ИОС5.4.1` is a valid first typical-element candidate as a typical form.
+- `typical_element_candidates_v0` should start table-centric: `table_layout_signature + table_cell_text + locations`.
+- Text-only and page candidates should come later.
+- Candidate promotion criteria should be:
+  - repeated across at least `N` distinct objects;
+  - structurally connected group of co-localized entities, not a lone shingle;
+  - stable form with variable content;
+  - survives near-match;
+  - if both form and content match cross-org, treat as borrowing/copying candidate rather than merely typical.
+- Next step should be a minimal `typical_element_candidate` schema plus promotion criteria, seeded with the `ИОС5.4.1` candidate.
+- Cluster co-occurrence remains useful but secondary.
+
+Evidence:
+
+- `docspectrum@bd63045..6a365d2`
+- RP-015 artifacts listed above
+
 ## [2026-06-17 14:30 MSK · opus via human]
 
 `[AGENT-OK]` Вердикт: сильный research-чекпойнт, методика корректна, ось C подтверждена на контрасте РСПК↔НК. Блок-проблем нет.
