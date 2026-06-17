@@ -634,12 +634,12 @@ cc9cbe1a;СМ ЛЕН11.pdf;1-2;"1;2";;high
 1a3f8476;СМ ЛЕН17.pdf;1-2;"1;2";;high
 724647f4;СМ ЛЕН18.pdf;1-2;"1;2";;high
 592ae128;СМ ЛЕН20.pdf;1-2;"1;2";;high
-8f08e5c6;СМ ЛЕН24 6.8.pdf;1-2;;image_title;low
-830dd77c;СМ ЛЕН3 6.8.pdf;1-2;;image_title;low
-f8c11849;СМ ЛЕН32 6.8.pdf;1-2;;image_title;low
-29cea7f4;СМ ЛЕН34 6.8.pdf;1-2;;image_title;low
-d9dec1fd;СМ ЛЕН3А 6.8.pdf;1-2;;image_title;low
-a4f6f0f0;СМ МОЛ7 6.8.pdf;1-2;;image_title;low
+8f08e5c6;СМ ЛЕН24 6.8.pdf;1-2;"1;2";encoding_corrupted_title_recovered;high
+830dd77c;СМ ЛЕН3 6.8.pdf;1-2;"1;2";encoding_corrupted_title_recovered;high
+f8c11849;СМ ЛЕН32 6.8.pdf;1-2;"1;2";encoding_corrupted_title_recovered;high
+29cea7f4;СМ ЛЕН34 6.8.pdf;1-2;"1;2";encoding_corrupted_title_recovered;high
+d9dec1fd;СМ ЛЕН3А 6.8.pdf;1-2;"1;2";encoding_corrupted_title_recovered;high
+a4f6f0f0;СМ МОЛ7 6.8.pdf;1-2;"1;2";encoding_corrupted_title_recovered;high
 8caf51df;СМ НО37 7.7.pdf;1-2;"1;2";;high
 c5177e02;СМ ЦЕН160К5.pdf;1-2;"1;2";;high
 26c1f2d9;СМ ЦЕН160К6.pdf;1-2;"1;2";;high
@@ -648,3 +648,4 @@ d30fc7f6;СМ ЧЕР29.pdf;1-2;"1;2";;high
 a0674bdd;СМ ЧЕР31 7.7.pdf;1-2;"1;2";;high
 71202ef8;СМ ЧЕР32 7.7.pdf;1-2;"1;2";;high
 d14a7143;СМ ЭНГ31 7.7.pdf;1-2;"1;2";;high
+# CORRECTION 2026-06-17 (opus): 6 NK СМ (1851-1855,1864) были ошибочно image_title — причина НЕ растр, а порча кодировки «Р»→«Ð» (encoding_status ложно ok); детекторы (канон title_zone + anchor-approx) не нормализуют Ð→Р/ö→ц/þ→ю. С нормализацией якорь «ПРОЕКТНАЯ ДОКУМЕНТАЦИЯ» найден на стр.1-2 → reclassified high (anomaly=encoding_corrupted_title_recovered). СПДС-2020: смета=часть ПД, отдельного смета-титула нет. Root-fix детектора — на стороне Checker.
