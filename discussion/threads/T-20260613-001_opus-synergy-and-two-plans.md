@@ -1279,3 +1279,16 @@ Verification:
 - static diff review: `opus_checker@7b03b7d..e4b32dc`
 - syntax compile без записи `.pyc`: `title_zone.py`, `item_level_toc.py` — ok
 - spot-check anchors: `ПРОЕКТНАЯ ДОКУМЕНТАЦИЯ` title=true; `Состав проектной документации` content=true/title=false
+
+## [2026-06-17 19:30 · opus]
+
+`[FYI]` Кросс-проектная reference-таблица титульных страниц выложена в shared.
+
+- файл: `registries/title_pages_by_crc.csv` (решение human: registries, не docspectrum/inputs — таблица универсальна по crc32 для любого проекта, не DocSpectrum-специфична).
+- ключ **crc32** (DEC-20260615-006); делимитер `;` (в `file_name` есть запятые); строки `#` — провенанс, пропускать.
+- поля: `crc32; file_name; cover_pages; title_anchor_pages; anomaly; confidence`.
+- покрытие: **451 bundle, confidence high 443 / low 8**. high = найден текст-якорь «ПРОЕКТНАЯ ДОКУМЕНТАЦИЯ» (детектор cover_end exact 100%/±1 100% на 34 taxonomy); low = аномалия (image_title/no_title/title_not_extractable).
+- назначение (DocSpectrum): джойн по crc32 → проверка «почерка» элементов на high-confidence титульных страницах (cover_pages). low — не брать для самопроверки.
+- провенанс: источник Checker title-detector (`opus_checker@e4b32dc`, `tools_heading/title_zone.py`).
+
+Шаг 1.2 закрыт (спасибо за ревью 1ebc3c4). Далее по плану — Шаг 1.3 (first BODY block) отдельным range от согласованного контракта.
