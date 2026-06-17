@@ -29,6 +29,7 @@
 | TSK-009 | Шаг 2 | Построение и выбор TOC/BODY корпусов | review | opus/codex | A/B `opus_checker@8f79060`, `out/ab_cutoff_firstblock.csv` | candidate_corpora.csv готов; A/B: отсечка ИНЕРТНА для first-block (0 улучш/0 регресс; cutoff_active 3/35). Редирект усилий → item-level TOC present/missing/wrong (TSK-010); cutoff оставлен, не вредит |
 | TSK-010 | Шаг 3 | Item-level verdicts | todo | TBD | `contracts/metrics_contract.md` | Не начинать без согласованных корпусов и метрик |
 | TSK-011 | SPDS | Извлечение текста внутри СПДС-рамки | todo | TBD | `contracts/spds_frame_text_contract.md` | Не считать решенным: нужен отдельный эксперимент и метрики |
+| TSK-013 | Upstream/explorer | Поправить детекцию битой кодировки в `pdf-structure-explorer` | todo | fable (raise: opus) | `pdf-structure-explorer`, `batch_validate.char_garble` | **explorer — наш upstream-источник выгрузок**, поэтому это и наша забота, хоть проект ведёт другая ветка. `encoding_status` ловит НЕ все виды: Вид 1 (ASCII-латиница, подмена кириллицы) НЕ флагается → 1866 АР/КР (garble ~0.9-1.0) показывал `encoding_status=ok`. Виды: 1 ASCII-латиница (токен), 2 Latin-1 þ/ú (символ), 3 C0/PUA (символ). Эталон-детектор есть у нас (`batch_validate.page_raw_garble`). Предложить explorer считать `raw_garble_ratio`/`garble_kind` на сегмент/страницу при выгрузке → потребителям не пере-выводить |
 
 ## Ближайшие задачи
 
