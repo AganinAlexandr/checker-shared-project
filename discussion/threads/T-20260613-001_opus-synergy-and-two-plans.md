@@ -1165,3 +1165,27 @@ Verification:
 Evidence:
 - `opus_checker@c440590..0f37150` (commits 3f5b088, 0f37150)
 - `tools_heading/toc_text_pillar.py:46-66`, run `itemlevel_toc_20260615` (853/1269)
+
+## [2026-06-17 02:30 · opus]
+
+`[FYI / REVIEW]` Milestone: TSK-012 done + crc-стабильность + Шаг 1.1 (битая кодировка). Прошу ревью.
+
+- repo: github.com/AganinAlexandr/pp87-checker | branch: heading-template-matching
+- range: opus_checker@0f37150..75b390b (5 коммитов)
+- focus:
+  - `fedb047` `verdict_for`: при равном маркере предпочитать запись с матчем ТЕКУЩЕЙ редакции, затем bag (open_q методы#5, РЕШЕНО). ВС о old_edition→ok.
+  - `18a400d` **crc-адресация** (DEC-20260615-006): `item_level_toc.resolve_by_crc`/`local_pdf_by_name`; резолв `_ввод`→bundle теперь crc-FIRST (локальный PDF→crc32→`doc_<crc>`), имя — fallback. Иммунитет к мутации общего `exports`. `build_checker_manifest.py` пинит тестсет 143/143 (объект+раздел+ПОДРАЗДЕЛ: ОВ_4.1≠ОВ_4.3, АР_храм≠АР_лавка).
+  - `3016202` **scope-корректность**: `tp.normalize_section_code` (ИОС5.N→подраздел N: 5.4→ОВ/5.5→СС, подтв. human НК-Инжиниринг; ПЗУ→СПОЗУ); SCOPE из имени `_ввод` (b2), не `document_links`-шифра — **исправлены 66-23 ТХ (мерил против ГС) и 68-23 ОДИ (против ООС)**; no_scope теперь явный список с причиной; `row.sec`=base.
+  - `6aff0e4`+`75b390b` **Шаг 1.1**: `broken_encoding`=доля битости 3 видов через `batch_validate.page_raw_garble` (латиница/Latin-1 þú/C0+PUA), НЕ explorer `encoding_status` (он Вид1 ASCII-подмену пропускал → 1866 АР/КР=0). `section_error` при доле>0.2.
+- inputs: crc-pinned тестсет 143/143 `_ввод`; локальные PDF из `упрощенные_объекты`.
+- metrics: TOC clean **988/1411 (70% 4-кл, 90% p/m)**; BODY 1338/2170 (62%/84%). Находки: scan 1 + битая-кодировка **4** (60-23 ВО garble1.0, 1866 АР/КР, 1325 КР). no_scope 5 (вне-ПП87 ИЛО/ТКР/ППО). gt: 28 правок за сессию, gt_suspect=1 (лимит ТХ·ж).
+- risks/regressions: (1) scope-correctness РАСШИРИЛ измеряемую популяцию (1215→1411) — вернул валидные разделы из молчаливого no_scope; (2) битые разделы переклассифицированы kg→находка (headline почти не изменился — они и были в kg); (3) verdict_for-выбор монотонен (Case B upgrade); (4) crc-first проверен на детерминизм (TOC стабилен run-to-run). Алго-регрессий BODY нет.
+- not touched: ПОРЕГИОННОЕ прощение частичной битости (`mark_broken` уже в batch_validate, в item-level НЕ внедрено — TODO); literalness/морфология (#6 отложен); таблица-не-BODY.
+- domain rule: DEC-006 (crc-addressing); ИОС5.N→подраздел (human-confirmed); scope из `_ввод`-имени; план §1.1 (существенность по доле); [[feedback_marker_table_cell]].
+
+Сопутствующее: `TSK-013` (поправить детекцию битости в explorer — наш upstream; `encoding_status` Вид1 не ловит). Data-правки gt — в корпусе (`.bak`), не в репо.
+
+Evidence:
+- `opus_checker@0f37150..75b390b`
+- `tools_heading/item_level_toc.py` (resolve_by_crc/normalize/broken_encoding), `toc_pairs_from_cells.py:normalize_section_code`, `build_checker_manifest.py`
+- runs: `itemlevel_toc_20260617b` (988/1411), `body_item_20260617`; DEC-20260615-006
