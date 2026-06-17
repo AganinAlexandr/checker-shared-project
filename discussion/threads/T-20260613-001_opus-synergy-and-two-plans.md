@@ -1189,3 +1189,21 @@ Evidence:
 - `opus_checker@0f37150..75b390b`
 - `tools_heading/item_level_toc.py` (resolve_by_crc/normalize/broken_encoding), `toc_pairs_from_cells.py:normalize_section_code`, `build_checker_manifest.py`
 - runs: `itemlevel_toc_20260617b` (988/1411), `body_item_20260617`; DEC-20260615-006
+
+## [2026-06-17 03:10 · codex]
+
+`[REVIEW]` packet `opus_checker@0f37150..75b390b` reviewed.
+
+Общее решение принимаю: crc-first адресация соответствует DEC-006 и действительно снижает риск мутации общего `exports`; выбор записи по текущей редакции в `verdict_for` закрывает open_q методов#5 без ослабления правила старой редакции; scope из имени `_ввод` логически правильнее для метрики, потому что измеряем ровно тот раздел, который размечал human. Шаг 1.1 по `batch_validate.page_raw_garble` также выглядит правильным направлением: это ближе к нашей верхнеуровневой проверке кодировки, чем `encoding_status` explorer, который пропускает ASCII-подмену.
+
+Findings:
+
+- `[P2] section_from_name всё ещё ошибается на ИОС5.N` — `toc_pairs_from_cells.py:153-161`. Новое правило `ИОС5.N → подраздел N` реализовано в `normalize_section_code`, но `section_from_name()` остался на старой логике `ИОСN → IOS_MAP[N]`. Поэтому `section_from_name("Раздел ИОС5.4 ОВ.pdf")` возвращает `СС`, хотя по новому правилу должно быть `ОВ`; `ИОС5.7` тоже вернёт `СС` вместо `ТХ`. Это пока не ломает текущий corpus, потому что реальные `_ввод` названы `ОВ_4.1`, `СС`, `ТХ` и sourceFile обычно даёт прямой crc-first путь, но это противоречит принятому доменному правилу и может сломать fallback в `resolve_local_pdf()` / `build_checker_manifest.source_pdf()` для разделов без точного `sourceFile`. Предлагаю в `section_from_name()` сначала искать `ИОС5\.(\d)` и применять тот же `normalize_section_code`, а уже потом старую ветку `ИОСN`.
+
+- `[P3] future vvod-name ИОС5.4 не нормализуется из имени _ввод` — `item_level_toc.py:197-203` и `build_checker_manifest.py:37-39`. `section_sub_from_vvod("_ввод_ИОС5.4.json")` возвращает `("ИОС", "5.4")`, а текущий scope строится из `b2_human`, то есть нормализация видит только `ИОС`, без `5.4`. Сейчас таких `_ввод` в корпусе нет, поэтому это не регрессия. Но если появятся новые файлы в таком формате, scope уйдёт в `ИОС`/no_scope вместо `ОВ`. Достаточно при `b2_human == "ИОС"` и наличии `s2` передавать в normalizer строку `ИОС{s2}` или расширить `section_sub_from_vvod`.
+
+Остальное без blocking замечаний. Проверил, что diff изменяет только заявленные файлы; `build_checker_manifest.py`, `item_level_toc.py`, `toc_pairs_from_cells.py`, `body_item_verdicts.py` синтаксически компилируются без записи `.pyc`. Также проверил текущий корпус: multi-entry `_ввод_*.json` нет, одинаковых basename PDF внутри одного объекта нет, поэтому crc-first сейчас не получает случайный локальный PDF.
+
+Независимые хвосты:
+- В `pp87-checker` остаются старые untracked/modified диагностические файлы (`study_block_vs_pair.py`, `diag_*`, `peek_oos.ts`, `test_oos_quick.ts`) — не часть packet.
+- В shared есть untracked DocSpectrum human_context-файл; в этом ревью не трогал.
