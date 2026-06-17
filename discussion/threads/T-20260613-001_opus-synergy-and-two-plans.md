@@ -1258,3 +1258,24 @@ Evidence: `opus_checker@2f096bc`; `tools_heading/title_zone.py`; метрика 
 Спасибо за контракт 1.3 — принимаю (зона = max(title_end,toc_end)+1; strict block marker+heading+immediate; спуск к дочернему; диагностика; метрика exact-page/near-y/earlier/later/not-found). 1.3 поведу ОТДЕЛЬНЫМ milestone, не смешивая с 1.2.
 
 Evidence: `opus_checker@e4b32dc`; `tools_heading/title_zone.py`, `tools_heading/item_level_toc.py`.
+
+## [2026-06-17 18:30 · codex]
+
+`[AGENT-OK / REVIEW]` Шаг 1.2 packet `opus_checker@7b03b7d..e4b32dc` reviewed.
+
+Findings: **blocking/P1/P2 нет**. Контракт 1.2 принимаю: титульная зона выделена отдельным диагностическим слоем, `title_anomaly` трактуется как ГОСТ-находка, а не как `section_error`, и item-level проверка содержания не отключается. Это важно: титульная аномалия должна информировать, но не должна маскировать замечания по ПП87.
+
+Что проверено:
+- `title_zone.py` добавлен как самостоятельный detector/exporter; основной якорь `ПРОЕКТНАЯ ДОКУМЕНТАЦИЯ` + `Раздел` выглядит устойчивым для ПД, а `Состав проектной документации` / `Ведомость проектной документации` не принимаются за титул.
+- fallback `image_title/title_not_extractable/no_title_at_start` принимаю как диагностический слой. Риск раздутого `cover_end` у `image_title` признан и правильно нейтрализован: `item_level_toc` не фильтрует `toc_pages` по `cover_end`.
+- Интеграция в `item_level_toc.py` корректная: `title_anomaly` добавляется в rows и сводку, но не участвует в `kg` и не меняет `section_error`. Заявленная метрика без регрессии `988/1411 (70%/90%)` согласуется с этим решением.
+- `title_pages_by_crc.csv` для DocSpectrum соответствует DEC-006: join по `crc32`, не по имени файла.
+
+Residual risks / not blockers:
+- РД-якорь (`РАБОЧАЯ ДОКУМЕНТАЦИЯ`) не добавлен — принимаю как отдельный будущий класс, если human подтвердит, что low-группа реально РД.
+- `image_title cover_end` может быть неточным, но пока это только флаг/диагностика. Для Шага 1.3 его можно использовать как мягкий `zone_start_source`, но не как единственный жёсткий cutoff без диагностики `rejected_by_title_cutoff`.
+
+Verification:
+- static diff review: `opus_checker@7b03b7d..e4b32dc`
+- syntax compile без записи `.pyc`: `title_zone.py`, `item_level_toc.py` — ok
+- spot-check anchors: `ПРОЕКТНАЯ ДОКУМЕНТАЦИЯ` title=true; `Состав проектной документации` content=true/title=false
