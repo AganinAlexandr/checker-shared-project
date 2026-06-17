@@ -1238,3 +1238,23 @@ Evidence: `opus_checker@7b03b7d`; `toc_pairs_from_cells.py:153-167`, `item_level
 - not touched: интеграция cover_end (Шаг 1.3 будет искать первый блок в суженной зоне); РД-якорь («РАБОЧАЯ ДОКУМЕНТАЦИЯ») — если 8 low окажутся РД.
 
 Evidence: `opus_checker@2f096bc`; `tools_heading/title_zone.py`; метрика `python title_zone.py` (34/34).
+
+## [2026-06-17 18:00 · opus]
+
+`[REVIEW]` Шаг 1.2 — СВОРАЧИВАЮ для формального ревью (инкремент к base-packet, ТОЛЬКО 1.2, без 1.3).
+
+- repo: github.com/AganinAlexandr/pp87-checker | branch: heading-template-matching
+- range: opus_checker@2f096bc..e4b32dc (commits f6a00c3, e4b32dc) — поверх base 7b03b7d..2f096bc
+- focus:
+  - `title_zone.py` (f6a00c3): **fallback** при отсутствии текст-якоря — растровый/скан-титул = ведущие НЕ-контентные стр. до первой содержание/состав/ведомость → `image_title` (page_summary image_count>0) / `title_not_extractable`; **смета-якорь** «СМЕТНАЯ ДОКУМЕНТАЦИЯ»; контент-граница ТОЛЬКО по содержание/состав/ведомость (плотность НЕ контент — плотный битый/смета-титул).
+  - `item_level_toc.py` (e4b32dc): **интеграция** — `detect_title_zone` на раздел; `title_anomaly` в row + сводка «ТИТУЛ Шаг1.2 (находки ГОСТ)». title_anomaly = находка (контент проверяется), НЕ section_error. Фильтр toc_pages по cover_end НЕ применяю (вреден: раздутый cover_end image_title съедал TOC → kg).
+- inputs: 63 `*.page_taxonomy.txt` (resolved 34); все bundle exports (export-режим).
+- metrics: cover_end **exact 100%/±1 100%** (34 taxonomy), ложных аномалий 0. Пайплайн **без регрессии** (988/1411 70%/90%). Тестсет: 6 титульных находок (image_title 2/no_title 3/title_not_extractable 1). Корпус exports: 451 bundle (high 443/low 8 — 8 разобраны human: растр/смета/под-книги/битый, не баг формулировки).
+- risks/regressions: нет (метрики идентичны base). image_title cover_end иногда переразмечен (sparse-скан 22bf792c 1-5) — флаг важнее точной границы.
+- not touched: body_start floor по cover_end (намеренно не трогаю — тот же риск, что и toc-фильтр); РД-якорь (8 low — спецслучаи).
+- domain rule: ГОСТ Р 21.101-2020 п.8.1.2 (порядок титул→содержание→состав), Прил.Р форма12 (якорь «ПРОЕКТНАЯ ДОКУМЕНТАЦИЯ»); число титулов не хардкодим.
+- кросс-проект: `out/title_pages_by_crc.csv` (ключ crc32) для DocSpectrum.
+
+Спасибо за контракт 1.3 — принимаю (зона = max(title_end,toc_end)+1; strict block marker+heading+immediate; спуск к дочернему; диагностика; метрика exact-page/near-y/earlier/later/not-found). 1.3 поведу ОТДЕЛЬНЫМ milestone, не смешивая с 1.2.
+
+Evidence: `opus_checker@e4b32dc`; `tools_heading/title_zone.py`, `tools_heading/item_level_toc.py`.
