@@ -1,6 +1,6 @@
 # RP-20260617-018: Section library report v0
 
-Status: open
+Status: reviewed
 Project: DocSpectrum
 Generator: codex
 Reviewer: opus
@@ -142,3 +142,21 @@ Evidence:
 - notes: `notes/section_library_report_v0.md`
 - artifacts: paths listed above
 - shared context: `HC-20260617-010`, `RP-20260617-016`, `RP-20260617-017`
+
+## [2026-06-17 21:00 MSK · opus via human]
+
+`[AGENT-OK]` (структура) Вердикт: combined UC1-отчёт по СТРУКТУРЕ верен — единый раздел-вид (table+text coverage/residual + орг-conformance), headline на text-SEGMENT (не shingle, мой RP-017 финдинг учтён ✓), source-колонки сохранены, honest interpretation_notes, 0 missing. «Сборка 1» HC-010 по форме закрыта. НО **триаж `review_priority` требует нормализации до product-facing** (must-fix).
+
+**ГЛАВНАЯ находка — `review_high` это SIZE-артефакт.** В чистом корпусе (table_borrowing=0) флаги гонит `copy_review_count≥20` (абсолютный). Проверил: 20/29 review_high — по copy_review; у них **median text_segment=12528 vs 1048 у clear (×12 больше)**, а copy_review = лишь **0.3% сегментов (max 2%)**. То есть порог ловит БОЛЬШИЕ документы, не подозрительные → **37% чистого корпуса флагнуто = ложные тревоги.** Для UC1 («шеф проверяет») триаж, кричащий на 37% чистых, неюзабелен.
+→ **Фикс: нормировать copy_review на размер (РАТИО per segment), не абсолют.** При max-ratio 2% review_high тогда корректно ≈ пуст (копирования в корпусе нет). 11/29 идут по foreign≥0.2 — возможны артефакты org-distinctiveness ratio-delta (как text-bridges) → guard по редкости/prevalence.
+
+**Ответы на open-вопросы:**
+- Q1 (unweighted mean table+text-segment): ок для v0 (segment ✓, shingle исключён ✓); каверз — усредняет coverage разных знаменателей (2 таблицы = 500 сегментов равный вес), element-weighted позже.
+- Q2 (review_priority безопасен как триаж): **формулировка ок** (clear/watch/high + «hint, не legal»), **но пороги НЕТ** — copy_review абсолютный = size-артефакт (см.выше). Нормировать ДО показа человеку.
+- Q3 (след: Excel/PQ ИЛИ near-match): **сначала фикс review_priority** (нормировка — дёшево, это потребительский флаг, не должен врать), потом по приоритету **near-match (UC3)**; Excel-экспорт — после доверенного флага (не выносить вводящий в заблуждение триаж людям).
+- Q4 (candidate ID lists в отчёте): компактно + ссылка на source coverage (там candidate_ids); отчёт держать тонким ✓.
+- Q5 (закрывает ли HC-010 Build 1): по СТРУКТУРЕ да (combined UC1-вид); калибровка триажа — остаток.
+
+**Каветы (общие, Codex отметил):** copy/foreign — только негативный контроль, ловящая способность не испытана (нет позитивных кейсов); residual ≠ доказанная оригинальность; graphics/near-match отсутствуют — research-v0.
+
+Evidence: `docspectrum@532061b..675c3a4`; verified review_priority logic (copy_review≥20 size-driven: high-docs seg 12528 vs 1048, copy_review ratio 0.3%/max2%), headline uses segment.
