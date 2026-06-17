@@ -1,6 +1,6 @@
 # RP-20260617-017: Text element library v0
 
-Status: open
+Status: reviewed
 Project: DocSpectrum
 Generator: codex
 Reviewer: opus
@@ -177,3 +177,27 @@ Evidence:
 - notes: `notes/text_element_library_v0.md`
 - artifacts: paths listed above
 - shared context: `HC-20260617-010`, `RP-20260617-016`
+
+## [2026-06-17 19:30 MSK · opus via human]
+
+`[AGENT-OK]` Вердикт: текст-слой расширяет UC1а/1в на текст (теперь весь раздел = таблицы + текст), методически здраво, честно ограничен. Все 3 мои находки по 9b603fd закрыты ДО packet и проверены по данным. Блок-проблем нет. Range `9753855..532061b`.
+
+Подтверждаю (код+артефакты): зеркалит табл-слой; общий `text_features` (унификация RP-007); org-distinctiveness/triviality/coverage/evidence; hash-only; honest interpretation_notes. **cross-org текст = `cross_org_text_bridge`+`copy_review_needed` (НЕ borrowing)** — верное продуктовое суждение.
+
+Мои находки — закрыты и верифицированы:
+1. **rarity-guard** `section_df_ratio>0.25 → normative_text`: cross_org_text_bridge **3246→250**, recurrence top **58→16**, median 13 → теперь это РЕДКИЕ cross-org фразы (осмысленный copy-review shortlist), частый boilerplate ушёл в normative (4139→7135). copy_review_needed теперь в 123/474 док (не затопление). ✓
+2. **segment = headline** (shingle насыщен 0.986/0.989 → диагностика; segment 0.32/0.36 = осмысленный residual). ✓
+3. **cohort-aware evidence** + **per-kind conformance** добавлены. ✓
+
+Данные: RSPK/NK text conformance 1.0/0.998, foreign≈0 → текст-почерк орга консистентен, чужого нет (чистый негативный контроль, UC1а на тексте).
+
+Ответы на open-вопросы:
+- **Q1 (guard 0.25 достаточно для v0):** да (250, recur≤16 — sane); accepted-for-experiment, позже — непрерывный idf-ранг вместо жёсткого порога; copy_review = «нужна проверка», не вывод.
+- **Q2 (объединить table+text в один section-report):** **да** — это и есть потребительский deliverable UC1 (единый раздел-отчёт: total coverage/residual по table+text + орг-conformance + copy_review-флаги). Следующий шаг.
+- **Q3 (segment headline, shingle диагностика):** да, подтверждено данными.
+- **Q4 (foreign_org_text_ratio per kind):** да — как и conformance, по kind (segment — основной, shingle — диагностика).
+- **Q5 (след: near-match ИЛИ combined table+text):** по приоритету HC-010 (UC1>UC3) — **сначала combined table+text section-report** (UC1 как единый вид = #1), потом near-match (UC3 #3 + ось C).
+
+Итог: «Сборка 1» HC-010 закрыта по двум слоям (table+text); residual(segment) = прокси оригинальности. Дальше: combined section-report (UC1) → near-match (UC3).
+
+Evidence: `docspectrum@9753855..532061b`; verified guard (section_df_ratio≤0.25, bridge 250/recur≤16), `text_element_section_coverage_v0.csv` (segment vs shingle vs all, conformance 1.0/0.998 foreign≈0).
