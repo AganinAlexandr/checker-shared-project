@@ -1292,3 +1292,16 @@ Verification:
 - провенанс: источник Checker title-detector (`opus_checker@e4b32dc`, `tools_heading/title_zone.py`).
 
 Шаг 1.2 закрыт (спасибо за ревью 1ebc3c4). Далее по плану — Шаг 1.3 (first BODY block) отдельным range от согласованного контракта.
+
+## [2026-06-18 · opus] — ИТОГ кросс-проектной части (титулы) для DocSpectrum
+
+`[FYI]` Сводка перед компактом — всё, что Checker отдал/нашёл для DocSpectrum по титульным страницам.
+
+1. **Reference-таблица**: `registries/title_pages_by_crc.csv` (ключ crc32, DEC-006; делимитер `;`; `#`-провенанс). 451 bundle, confidence high 443/low 8. Поля: crc32; file_name; cover_pages; title_anchor_pages; anomaly; confidence. Источник: Checker `title_zone.py` (cover_end exact 100%/±1 100% на 34 taxonomy). DocSpectrum: джойн по crc32 → «почерк» элементов на high-титульных.
+2. **Якорь титула (recipe для anchor-approx)**: standalone строка ~«проектная документация» (всегда CAPS) — **corruption-толерантный фаззи-матч 2 токенов** (difflib ratio≥0.8): ловит порчу Ð/ö/þ без карты гомоглифов. + строки группировать по (page, round(y1)), горизонтальные (w≥h). Состав/ведомость/предложение тела (с «…») — НЕ титул.
+3. **Эпизод кодировки**: порча Р→Ð / ц→ö / ю→þ, `encoding_status` ложно «ok» → оба детектора промахивались. 3-route фикс: **(a)** DocSpectrum `normalize_text` += карта порчи (весь текст-слой — corpus_freq/coverage) — Codex; **(b)** Checker corruption-толерантный якорь + удалён SMETA-спецкейс (смета=ПД, СПДС-2020) — **ГОТОВО `opus_checker@9be87c3`**; **(c)** extractor `encoding_status` ловит Ð/ö/þ — upstream `TSK-013`.
+4. **OCR-on-suspect — ВАЛИДИРОВАНО (прототип)**: рендер 1 стр. @300DPI + Tesseract(rus, tessdata в `OCR_docs/tessdata`) полностью восстановил растровый титул 1827 КР (объект, ПРОЕКТНАЯ ДОКУМЕНТАЦИЯ, Раздел+название, шифр К-А-14А-КР, том, год, ГИП). Закрывает СРАЗУ растровый титул И порчу кодировки (рендер обходит битый текст-слой). Триггер строго по подозрению (мал объём = титул). Интеграция в `title_zone` предложена, ждёт решения human. Применимо и на стороне DocSpectrum (suspect title pages).
+5. **Растровый recipe** (для DocSpectrum-side, если понадобится): ведущая стр. с image-элементом ≥~50% площади + нет содержания/состава = `image_title`. NB: 6 NK СМ оказались ТЕКСТ-титулами с порчей кодировки (не растр) → encoding-recovery, не raster-подкласс.
+6. **Cross-test титул-почерка** (Codex строит, opus ревьюит): разблокирован на 475/475 (обе орги). Гипотеза RP-015: РСПК рамки+таблицы vs НК рамки+изображения; растровые титулы НК — сами по себе орг-сигнатура.
+
+Статус Checker-плана: Шаг 1.1 (битость) done, Шаг 1.2 (титул) done. Шаг 1.3 (first BODY block) — на паузе по нашему порядку (сначала кросс-тест/encoding). OCR-fallback в title_zone — открытое решение.
