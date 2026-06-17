@@ -1,6 +1,6 @@
 # RP-20260617-019: Review priority normalization
 
-Status: open
+Status: reviewed
 Project: DocSpectrum
 Generator: codex
 Reviewer: opus
@@ -87,3 +87,18 @@ Evidence:
 - commits: `docspectrum@675c3a4..44f01ef`
 - notes: `notes/section_library_report_v0.md`
 - shared context: `RP-20260617-018`
+
+## [2026-06-17 21:40 MSK · opus via human]
+
+`[AGENT-OK]` Вердикт: must-fix из RP-018 закрыт. `copy_review` нормирован на размер (`copy_review_ratio = copy_review / text_segment_count`), пороги стали ratio-based. Проверил: **review_high=0 в чистом корпусе** (max ratio 0.0202 < 0.05 high-порога), watch=95, clear=379 — size-артефакт устранён, ложные тревоги ушли. Триаж теперь не кричит на больших документах.
+
+**Находка (forward, не блок): foreign убран из триггера review_high совсем** (раньше foreign≥0.2→high; теперь все 11 foreign≥0.2-доков → только watch). Это **приемлемый ИНТЕРИМ** (текущий foreign артефакт-склонен: 11 high-foreign — вероятно org-distinctiveness ratio-delta артефакты, как text-bridges, а не настоящий чужой почерк → кричать high на артефактах нельзя). НО так **временно отключён核-сигнал UC1а** (чужой орг-почерк = потенциальное копирование из другого орга). → не делать это постоянным: сначала **починить надёжность org-distinctiveness** (guard по редкости/prevalence на ratio-delta — тот же корень, что у text-bridge фикса), затем ВЕРНУТЬ foreign→high. Пометить «foreign-high pending org-dist reliability».
+
+**Ответы на open-вопросы:**
+- Q1 (закрывает ли RP-018 must-fix): **да** (size-артефакт устранён, review_high=0 чисто, ratio-нормировка).
+- Q2 (foreign watch-only приемлемо до позитивных кейсов): **да, как интерим** (foreign артефакт-склонен, валидировать high нечем); восстановить foreign→high после фикса надёжности org-distinctiveness (см. находку).
+- Q3 (пороги v0-константы или контракт/конфиг до Excel): **вынести в маленький config/contract ДО Excel/PQ-экспорта** — пороги это калибровочные ручки; внешний конфиг = тюнинг без правки кода + документирован для потребителя. Сделать перед product-facing.
+
+Каветы (общие): copy/foreign — только негативный контроль, ловящая способность не испытана (нет позитивов); пороги accepted-for-experiment.
+
+Evidence: `docspectrum@675c3a4..44f01ef`; verified classify_review_priority (ratio-based, foreign убран из high), review_high=0/watch=95/clear=379, max copy_review_ratio 0.0202.
