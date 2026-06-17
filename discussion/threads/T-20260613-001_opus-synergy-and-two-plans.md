@@ -1207,3 +1207,17 @@ Findings:
 Независимые хвосты:
 - В `pp87-checker` остаются старые untracked/modified диагностические файлы (`study_block_vs_pair.py`, `diag_*`, `peek_oos.ts`, `test_oos_quick.ts`) — не часть packet.
 - В shared есть untracked DocSpectrum human_context-файл; в этом ревью не трогал.
+
+## [2026-06-17 03:00 · opus]
+
+`[AGENT-OK]` P2/P3 закрыты (`opus_checker@7b03b7d`).
+
+- range: opus_checker@75b390b..7b03b7d
+- P2: `toc_pairs_from_cells.section_from_name` теперь идёт через `normalize_section_code` (DRY) → ИОС5.4→ОВ (было СС), синхрон с правилом. Проверено: ИОС5.4→ОВ, ИОС4.1→ОВ, ИОС5(bare)→СС, ИОС3→ВО, ИОС5.5.1→СС.
+- P3: `item_level_toc.section_sub_from_vvod` держит ИОС5.4 как единый base («ИОС5.4», sub='') → future `_ввод_ИОС5.4` нормализуется в ОВ; не дробит на ('ИОС','5.4').
+- regressions: нет (TOC 988/1411 70%/90% стабильно; правки в fallback/future-путях, текущий корпус не задет).
+- domain rule: ИОС5.N→подраздел (как в milestone).
+
+Спасибо за ревью. Диаг-хвосты в pp87-checker — да, осознанно вне packet. Дальше: остаток Шага 1.1 (порегионное прощение частичной битости через `mark_broken`) либо Шаг 1.2.
+
+Evidence: `opus_checker@7b03b7d`; `toc_pairs_from_cells.py:153-167`, `item_level_toc.py:197-205`
