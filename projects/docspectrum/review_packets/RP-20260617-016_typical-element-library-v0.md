@@ -1,6 +1,6 @@
 # RP-20260617-016: Typical element library v0
 
-Status: open
+Status: reviewed
 Project: DocSpectrum
 Generator: codex
 Reviewer: opus
@@ -181,3 +181,26 @@ Evidence:
 - notes: `notes/typical_element_candidates_v0.md`
 - artifacts: paths listed above
 - shared context: `T-20260617-016`, `HC-20260617-009`, `HC-20260617-010`
+
+## [2026-06-17 18:00 MSK · opus via human]
+
+`[AGENT-OK]` Вердикт: первый потребительский слой (каталог + coverage) работает end-to-end, методически здраво, честно ограничен. Блок-проблем нет. Range `6a365d2..9753855`.
+
+Подтверждаю (проверил код+артефакты):
+- директивы HC-010/T-016 выполнены: хэш-ID, тощий candidate + отдельный evidence, **coverage по РАЗНЫМ объектам** (size-aware), P2 org-distinctiveness В v0, content_variability, N≥3, hash-only, near-match honestly pending;
+- обе мои находки по 223af5a закрыты: **candidate_class теперь DERIVE** (cross_org + same/mostly_same content → borrowing_candidate) ✓; **diagnostic_trivial** для микро-форм ✓ (426 meaningful + 105 trivial);
+- **P2 работает:** 522 org_specific (орг-почерк) vs 7 cross_org_common (нормативный слой);
+- **coverage-инструмент = UC1а + UC1в(табл):** conformance/foreign, coverage/residual, borrowing-хук; interpretation_note честный.
+
+Результаты (мой факт-чек): RSPK и NK **conformance=1.0, foreign=0.0** (каждый док использует формы своего орга, чужих нет → орг-почерк консистентен); coverage **NK 0.90 vs RSPK 0.50** (NK сильнее шаблонизирован); borrowing=0. Чистый негативный контроль на уровне форм.
+
+Находки (минор/forward): (1) coverage = только таблицы → полный UC1в нужен текст/структурные формы; (2) **copy-catching (UC1а) и borrowing (UC3) — только негативный контроль**, ловящая способность не испытана (нет позитивного кейса чужих форм; ждёт данных/near-match); (3) exact-layout-сигнатуры мимо near-identical → near-match для UC3 обязателен.
+
+Ответы на open-вопросы:
+- **Q1 (UC3-хук derive class):** достаточно для v0 (логика верна); РЕАЛЬНЫЙ UC3 = near-match-gated (exact-content only сейчас).
+- **Q2 (diagnostic_trivial):** оставить в каталоге со статус-флагом (coverage уже фильтрует через candidate_statuses); отдельный артефакт — только если каталог разрастётся.
+- **Q3 (закрывает ли HC-010 «Сборка 1»):** да, для ТАБЛИЧНОГО слоя «Сборка 1» закрыта; полный UC1в (весь раздел) = расширение на текст.
+- **Q4 (след: near-match ИЛИ текст-coverage):** по приоритету HC-010 (UC1 > UC3) — **сначала текст-кандидаты + coverage** (доводит UC1а/1в до уровня всего раздела, не только таблиц = приоритет #1); near-match — следом (UC3 #3 + ось C). near-match остаётся критическим, но текст-слой ближе к #1.
+- **Q5 (взвешивать conformance по IDF/distinctiveness):** да в v0.1 — использование высоко-отличительной формы = сильнее почерк-свидетельство, чем общей; взвесить conformance по org_distinctiveness/section_idf (согласуется с P2). v0 простой ratio ок.
+
+Evidence: `docspectrum@6a365d2..9753855`; verified candidate_class derive + triviality, `typical_element_section_coverage_v0.csv` (RSPK/NK conformance 1.0/foreign 0.0, coverage 0.50/0.90, borrowing 0).
