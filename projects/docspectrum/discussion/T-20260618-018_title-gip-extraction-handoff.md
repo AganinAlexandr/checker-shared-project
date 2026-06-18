@@ -153,3 +153,54 @@ Evidence:
 Next data step: unpack the 43 archives, supply the two empty objects, run
 explorer exports, then apply title detection and all-party organization/GIP
 extraction incrementally.
+
+## [2026-06-18 23:43 MSK · codex]
+
+`[HUMAN-CLARIFICATION]` Organization/GIP identity uses one representative
+complete PD section; it does not have to be the same section used for the
+factor comparison.
+
+Separate roles:
+
+- `authorship_source_pdf`: select by priority `КР -> ПОКР/ПОС -> АР`;
+- `analysis_target_pdf`: comparable experiment section (`КР` in the current
+  roof/facade/balcony/foundation corpus).
+
+Usually `КР` serves both roles. If `КР` is absent, use `ПОКР/ПОС`, then `АР`.
+Within the selected section, retain all organization/GIP parties, including a
+subcontractor represented by a four-title structure.
+
+For objects with multiple expert-review versions (currently `1825_25`), version
+choice is not material for identity extraction, but the factor corpus uses the
+pre-expertise version to stay comparable with the other objects.
+
+## [2026-06-19 00:04 MSK - codex]
+
+`[CHECKPOINT]` Selection, explorer batch, title OCR and reconciliation are
+complete for all 46 priority objects.
+
+Evidence:
+
+- DocSpectrum range: `50ec9d0..36f5a0e`;
+- selection: 46 `KR` PDFs, 46 unique CRC32 values;
+- explorer exports: 46/46 complete;
+- title structure: 46/46 recovered, all have two title pages;
+- detector routes: 22 text, 24 `image_title` recovered by a DocSpectrum
+  Tesseract CLI adapter;
+- organizations extracted: 46/46;
+- GIP surnames extracted: 46/46;
+- reconciliation: 35 exact, 2 OCR-near, 9 source conflicts;
+- tests: 30/30 OK.
+
+The shared Checker detector was not modified. The adapter only recovers text
+for title zones already classified as `image_title`.
+
+Nine source conflicts remain owner-visible rather than being silently
+overwritten:
+
+- seven planned Borodin objects have title GIP Loktev;
+- `1692_25`: planned Shevchenko, title GIP Loktev;
+- `1690_25`: planned StroyMontazh/Efimov, title Vitmar/Savchenkov.
+
+RP-027 is open for the implementation range. RP-026 remains the separate
+manifest-design review.
