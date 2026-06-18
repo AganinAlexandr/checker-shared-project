@@ -131,3 +131,25 @@ Canonical detector location currently available on this workstation:
 The path in the original handoff (`pp87-checker/tools_heading/title_zone.py`)
 is the logical shared-module reference; consumer code should receive the module
 path through configuration rather than duplicate the detector.
+
+## [2026-06-18 22:38 MSK · codex]
+
+`[CHECKPOINT]` Priority corpus manifest built from the human-approved list.
+
+Evidence:
+
+- DocSpectrum commit: `50ec9d0`;
+- objects: `E:/output/DocSpectrum/gip_priority_manifest_v0/gip_priority_objects_v0.csv`;
+- memberships: `E:/output/DocSpectrum/gip_priority_manifest_v0/gip_priority_memberships_v0.csv`;
+- unique objects `46`, experiment memberships `56`;
+- all `46/46` found in XLSX candidate registry and `E:/MSE_арх`;
+- target-section PDFs ready: `0`;
+- archive-only: `43`;
+- empty source directories: `1823_25`, `1825_25`;
+- `1701_25` has only an unrelated `ИД` PDF;
+- registry discrepancy retained for title resolution: `1690_25`
+  (`СтройМонтаж` human cell vs `Витмар` XLSX).
+
+Next data step: unpack the 43 archives, supply the two empty objects, run
+explorer exports, then apply title detection and all-party organization/GIP
+extraction incrementally.
