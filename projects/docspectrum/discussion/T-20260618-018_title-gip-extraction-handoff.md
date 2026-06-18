@@ -38,3 +38,96 @@ Related: `HC-20260618-013`, `HC-20260618-012`, `HC-20260617-011`, `RP-20260618-0
 GIP-control анализ: within/cross по ГИП × вид работ × орг, **на орг-авторском residual** (provenance-first HC-012), гипотезы H1 (within-worktype same-GIP>diff-GIP) / H2 (cross-worktype same-GIP>baseline). Декомпозиция ГИП=стиль vs контент-согласованность.
 
 Open: пилот Оборина запускать до или параллельно с выгрузкой широких ячеек? (opus: пилот сразу — метод дешёв, данные есть.)
+
+## [2026-06-18 20:58 MSK · codex]
+
+`[ACCEPTED/REFINED]` Human clarified that the extraction target is not one
+`gip` field but the complete set of project organizations and GIPs represented
+on the title pages of each selected section.
+
+Required pipeline:
+
+```text
+PDF section
+  -> detect_title_zone(bundle, pdf_path)
+  -> detected title_pages
+  -> title-page organization sets
+  -> all organization <-> GIP pairs
+  -> role attribution
+  -> effective author GIP
+```
+
+Interpretation:
+
+- normally `2` title pages = one project organization and one GIP;
+- normally `4` title pages = a lead/customer organization set plus a
+  subcontractor set;
+- subcontractor organization and GIP are usually on pages `3-4`;
+- for a subcontracted section, `gip_author` is the subcontractor GIP (actual
+  developer), while the customer/lead GIP is retained separately as the
+  contractual/lead role;
+- organization names must be extracted and reconciled together with surnames,
+  not inferred from the XLSX registry alone.
+
+Do not hardcode title count to only `2/4`: the canonical detector explicitly
+supports practical/theoretical `1/2/3/4` and anomalies. Counts other than a
+confident paired structure go to manual review.
+
+Proposed normalized output:
+
+```text
+section_title_authorship
+  object_id
+  bundle_id
+  crc32
+  section_code
+  title_detection
+    title_pages
+    title_page_count
+    cover_end
+    source
+    anomaly
+    confidence
+  parties[]
+    party_id
+    title_page_numbers
+    organization_name_raw
+    organization_name_normalized
+    gip_name_raw
+    gip_surname_normalized
+    role
+      lead_designer
+      subcontractor
+      unresolved
+    extraction_confidence
+    evidence_refs
+  effective_author
+    organization_party_id
+    gip_party_id
+    selection_rule
+      subcontractor_actual_author
+      sole_designer_author
+      unresolved
+  registry_comparison
+    xlsx_organization
+    xlsx_dev_gip
+    organization_matches
+    gip_matches
+```
+
+Pairing rule:
+
+- page position (`1-2` vs `3-4`) is a strong feature, not sole proof;
+- role is confirmed using organization text, GIP signature proximity and
+  consistency across the paired title pages;
+- page 3/4 content such as `Справка ГИП`, TOC or body is not automatically a
+  second title set: only pages returned by `detect_title_zone.title_pages`
+  participate.
+
+Canonical detector location currently available on this workstation:
+
+`C:/Users/alexa/Cursor/Checker87 app/pp87-checker/tools_heading/title_zone.py`
+
+The path in the original handoff (`pp87-checker/tools_heading/title_zone.py`)
+is the logical shared-module reference; consumer code should receive the module
+path through configuration rather than duplicate the detector.
