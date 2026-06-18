@@ -143,3 +143,19 @@ Evidence:
 - commit/range: `docspectrum@6552e7e..3b7b678`;
 - shared context: `HC-20260618-012`;
 - preceding review: `RP-20260618-024`.
+
+## [2026-06-18 · opus] REVIEW
+
+`[AGENT-OK]` — проверено против артефактов+кода. Чистая реализация HC-012.
+
+**Подтверждено:** provenance_status expert_assessed 30 / unassessed 210; borrowing_eligibility ineligible_third_party 30 / blocked_unassessed 210; **eligible_for_review=0**; source_class external_form 13 / software_generated 13 / vendor_technical_material 4 (= метки 13/13/4); borrowing_signal confirmed_non_copy 30 / **not_assessable 210 (НЕ «подозрительные»)**; residual excluded_third_party 30 / not_available 210. Гейт верен в коде: eligible ТОЛЬКО `organization_authored + distinctive` (стр.51-55); дефолт unassessed → `blocked_unassessed` (стр.80-83), НИКОГДА не org-authored; org-residual только при authorship_scope=organization_authored (стр.144-148). Тесты 14/14; sample 16 = 8 ИОС5.4.1 / 8 СМ, 16 уникальных id, из pending.
+
+**Главное:** provenance-first гейт работает — заимствование заблокировано до установления org-authored+distinctive; unassessed консервативно blocked, не дефолтит в org/suspicious (регресс-тест). Это ровно HC-012.
+
+**Ответы на open questions:**
+1. **external_form vs regulatory — стоит разделить (не v0-блокер):** 13 «normative_form» по доменной интерпретации RP-024 = **manufacturer/order-формы** (авторство ПРОИЗВОДИТЕЛЯ), а не регуляторный/ГОСТ-текст. external_form их объединяет; для точности авторства ввести подклассы `manufacturer_form` vs `regulatory_form` когда появятся регуляторные случаи. Сейчас все 13 = manufacturer → ок для v0.
+2. **blocked_unassessed — верный консервативный дефолт, да** (ключевое свойство HC-012, регресс-тестировано).
+3. **Стратификация 16 — годна** (section×overlap×ratio, 2/страту, 8/8). Цель — найти org_authored+distinctive новизну; если все 16 снова third_party → негативный контроль крепнет. Мала (16/210), но дизайн верный для v0.
+4. **Legacy library-классы — НЕ мигрировать сейчас;** держать как versioned historical, мигрировать в provenance-таксономию после БОЛЕЕ ШИРОКОЙ разметки (ретро-релейбл на 30 метках = тонкая почва).
+
+**Следующий шаг:** human оценивает provenance стратифицированных 16 (картотека `page_provenance_sample16_review_v0.html`); если появится org_authored+distinctive → первый `eligible_for_review` (потенциальное заимствование). Параллельно — GIP-позитив-контроль (T-018, новые выгрузки).
