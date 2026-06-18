@@ -110,3 +110,23 @@ Evidence:
 - note: `notes/page_near_match_v0.md`;
 - artifacts: `E:/output/DocSpectrum/page_near_match_v0`;
 - preceding review: `RP-20260618-021`.
+
+## [2026-06-18 · opus] REVIEW
+
+`[AGENT-OK]` — проверено против кода+артефактов, не по пакету. Все заголовочные числа воспроизведены независимо.
+
+**Подтверждено:**
+- **exact recall 5481/5481** ✓ (воспроизвёл из neighbors any-mode). Exact-инъекция реальна в коде: `signature_indices` (стр.498-507) форсит кандидатов с тем же `page_signature` в shortlist до реранка; `exact_page_signature_match` — baseline-флаг, НЕ в скоре (стр.823-824). → near-match не может регрессировать exact.
+- **Скорер domain-нейтрален** ✓: `near_match_score` (стр.245-262) использует только count/composition/area/element_count; section/cohort/title/page_size в профиле есть, но в скор НЕ идут (joined только для eval/search). page-size исключён (согласуется с RP-021: page-size = орг-отпечаток).
+- **cross-org title: 367 moderate + 578 weak = 945** ✓ (воспроизвёл: per-title-page лучший cross-org сосед ≥0.70 → 367). Перцентили 0.6417/0.6765/0.811 ✓.
+- **review candidates 240** ✓, концентрация ИОС5.4.1(160)/СМ(80) ✓.
+
+**Наблюдения (уточнение интерпретации, не дефекты):**
+1. **«367» — это СТРАНИЦЫ (per-page best ≥0.70), не пары; и это 39% от 945** (медиана cross-org 0.6765 < 0.70 → 61% титулов moderate НЕ достигают). Анлок реален vs exact=0, но **частичный**; формулировать как «39% титулов имеют moderate+ cross-org структурный двойник», единица = страницы.
+2. **Cross-org TITLE near-match ≠ заимствование, скорее нормативная конвергенция.** Титулы — самая стандартизированная страница (ГОСТ форма 12); два орга, сходящиеся на общем титул-шаблоне = общая форма, не копирование. → title cross-org near-match = СЛАБЫЙ сигнал заимствования. Реальный UC3-субстрат — **body rare-text shortlist (240, ИОС5.4.1/СМ)**, не title-структура. Это тот же водораздел normative_form vs borrowing (как в тексте RP-018).
+3. **Гарантирован 1.0 только exact recall;** non-exact near-match через приближённый np-shortlist (top-k) → не исчерпывающий. Перцентили/367 — нижняя граница по shortlist. Честно framing'ить «shortlist, не полнота».
+4. **numpy — первая не-stdlib зависимость** toolchain; для ANN-shortlist оправдано, но фиксирую (держать ли lean — на решение owner'а).
+
+**Ответы на open questions:** (1) веса ок как v0-генератор кандидатов (эвристика, калибровать против ручного разбора 240 до промоушена); (2) exact-инъекция защищает baseline — да, проверено; (3) rarity-gate (rare_shared>0 AND jaccard≥0.2) достаточно консервативен для первой ручной калибровки — да; (4) **ДА — ручной триаж 240 ОБЯЗАТЕЛЕН до подачи в typical-element/UC3** (разделить заимствование / нормативную форму / сметный boilerplate, иначе нормативная конвергенция загрязнит сигнал copy). + не смешивать title-367 (вероятно в осн. нормативная форма) с body-240 (сильнее как borrowing-кандидаты).
+
+**Следующий шаг:** ручная калибровка 240 (borrowing vs normative vs boilerplate) → она задаёт ground-truth для UC3 и порогов. GIP-метки для L2 — ждут данных.
