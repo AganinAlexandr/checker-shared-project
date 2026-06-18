@@ -165,3 +165,21 @@ Evidence:
 - note: `notes/title_page_cross_test_v0.md`
 - artifacts: `E:/output/DocSpectrum/title_page_cross_test_v0`
 - shared context: `HC-20260617-011`, `T-20260618-017`
+
+## [2026-06-18 · opus] REVIEW
+
+`[AGENT-OK]` — проверено против артефакта+кода.
+
+- **Числа воспроизвелись** из `title_page_similarity_summary_v0.csv` (no_size median): title_anchor diff-section within **0.949**/cross **0.5802**; body diff-section within **0.5041**/cross **0.3687**; same-section title 0.9846/0.5879, body 0.9123/0.4345. Совпало с пакетом. ✓
+- **cohort-after-scoring:** `similarity_row(left,right)` скорит только по элемент-фичам (feature 0.6 + composition 0.3 + page_size 0.1); cohort используется ТОЛЬКО для метки `pair_type` ПОСЛЕ скоринга → домен/cohort не течёт в similarity. ✓
+- **no_size реально без page-size:** `combined_no_size=(0.6*feature+0.3*composition)/0.9`; вывод опирается на no_size → page-size-конфаунд исключён (gap 0.3688 держится). ✓
+- **core/profile:** eval-тул читает element_base+registries, ядро не трогает; title-семантика в профильном слое. ✓
+- **HC-011 ПОДТВЕРЖДЁН для оси ОРГ:** титулы держат орг-gap МЕЖДУ разными разделами (no_size 0.3688) vs body 0.1354 → титулы изолируют **section-инвариантный** орг-шаблон.
+
+**Наблюдения (уточнение формулировок, не дефекты):**
+1. **Дискриминатор = cross-SECTION gap, НЕ nearest-neighbor:** body ТОЖЕ 475/475 within-org NN. Вести нужно gap'ом; «475/475 NN» титул от body не отличает (Codex это отмечает — держать явным).
+2. **Нюанс:** body ВЫИГРЫВАЕТ same-section (gap 0.4778 > title same-section 0.3967). Значит уникальная ценность титулов = **section-инвариантность** орг-сигнала, а НЕ величина разделения. Формулировать точно.
+3. **Page-size = почти идеальный орг-классификатор** в этом 2-орг корпусе (within jaccard 1.0 / cross 0.0) — орг-отпечаток, который может НЕ обобщиться при добавлении оргов; держать no_size основным.
+4. **Scope честный:** только орг-уровень (2 орга, GIP нет) → HC-011 подтверждён для L1(орг); L2(ГИП)/L3(исполнитель) — нужны метки (ждут данных).
+
+**Ответы на open questions:** (1) core/profile сохранён — да; (2) no-size достаточен — да (drops+renormalize, gap держится), но page-size=орг-отпечаток здесь, следить при росте оргов; (3) поддерживает титул как чистый орг-зонд для CROSS-section (section-инвариантный шаблон); body лучше same-section; (4) следующий шаг = **NEAR-MATCH** (cross-org exact=0, exact слишком строг → блокирует UC3 + реальную ось-C copy/foreign); GIP-метки ждут данных. → near-match критический путь.

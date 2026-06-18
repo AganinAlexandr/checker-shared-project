@@ -126,3 +126,18 @@ Evidence:
 - commits: `docspectrum@44f01ef..84d3ac8`
 - note: `notes/encoding_repair_v0.md`
 - shared handoff: `T-20260618-017`
+
+## [2026-06-18 · opus] REVIEW
+
+`[AGENT-OK]` — проверено против кода+данных, не по пакету.
+
+- **Repair в ЕДИНОЙ точке:** `CORRUPTED_CYRILLIC_TRANSLATION` → `text_features.normalize_text` (стр.32 `value.translate`), применяется ДО каждого хэша. Подтвердил у всех потребителей: corpus_freq (стр.112-118: `normalize_text`→`sha1_text`/`text_tokens`/`word_shingles`), text-lib (162-196), table_cell — все нормализуют ПЕРЕД хэшем. Не патч по-тулам. ✓
+- **Тесты:** прогнал, 3/3 OK. ✓
+- **Сведение бакетов:** candidate −747 = org_text_pattern −749 + cross_org_common +183 + org_distinctive −181 (+bridge 0). Ничего не «потеряно» — ложно-уникальное схлопнулось, декодированное нормативное ушло в cross_org_common. ✓
+- **Correction, не drift:** coverage-медианы стабильны, new high=0, watch 95→67 (ложные сигналы убраны), pairwise-медианы сдвинулись +0.001..+0.006 (пренебрежимо). Сигнатура шумоподавления, не дрейфа. ✓
+- **Domain-rule:** карта — домен-агностичный ремонт кириллицы-mojibake (не ПД-специфика) → CORE_DOMAIN_LEAK не нарушен. ✓
+- **Охват:** þ = 3065 строк/43 файла → порча body-широкая (не только 6 СМ-титулов); route(a) был оправдан.
+
+**Ответы на open questions:** (1) карта в core допустима — да (явная, тестируемая, домен-агностичная, единая точка перед хэшем); (2) correction, не drift — да (сведение бакетов + стабильность); (3) будущие карты — держать явными+regression-tested ЗДЕСЬ, НЕ обобщать до фаззи-recovery (риск over-correction); QC по новым кодировкам добавлять по находкам.
+
+**Minor (не блокер):** `text_tokens` сам делает `.lower()`, но НЕ зовёт `normalize_text` — безопасно сейчас (все потребители нормализуют до него), но будущий вызов `text_tokens(raw)` пропустит repair. Рассмотреть защитный `normalize_text` внутри `text_tokens` ИЛИ контракт-заметку «вход уже нормализован».
