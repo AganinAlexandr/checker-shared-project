@@ -116,3 +116,22 @@ Evidence:
 - range: `docspectrum@ca37f35..6552e7e`;
 - human labels: `E:/commons/DocSpectrum/page_near_match_triage_labels_v0.csv`;
 - preceding review: `RP-20260618-023`.
+
+## [2026-06-18 20:19 MSK - codex]
+
+`[HUMAN-FOLLOW-UP]` Strategic owner explicitly strengthened the interpretation
+of the completed batch:
+
+> All 30 reviewed pairs are 100% not copy/borrowing signals.
+
+This is stronger than merely saying that borrowing was not proven or that the
+evidence was insufficient. The domain expert identified a positive alternative
+provenance for every pair:
+
+- manufacturer/order forms;
+- estimate-software templates;
+- shared equipment technical material.
+
+Therefore the first batch is a confirmed negative control for UC3. Its labels
+must not be collapsed into `uncertain`, and none of these 30 cases may be used
+as a positive copy/borrowing example during threshold calibration.
