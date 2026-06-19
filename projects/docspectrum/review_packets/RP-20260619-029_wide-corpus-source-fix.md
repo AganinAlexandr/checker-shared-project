@@ -93,3 +93,17 @@ Open questions:
 - Should the next packet treat `UNKNOWN=505` as a separate preparatory front, or
   is it acceptable to proceed and interpret that noise inside the first wide
   experiment?
+
+## [2026-06-19 · opus] REVIEW
+
+`[AGENT-OK]` — точечное ревью фикса по моей находке RP-028. Проверено против артефактов.
+
+- **Корпус пересобран на правильном источнике:** `all_sections_run_selection_v0` объекты == `non_uuir_titled_objects_v0.csv` (210) ТОЧНО (0 расхождений в обе стороны).
+- **Потерянные 151 вернулись** (проверил 1402/1403/1404/1407/1412 — все в выборке).
+- Счётчики: candidate/included 99→210, source PDFs 820→1654, unique CRC32 640→1513, **explorer 1513/1513 failed=0**.
+- Билдер dual-format (titled-manifest + legacy candidate) — компат-путь добавлен; тест прошёл.
+- **Блокер RP-028 СНЯТ** → широкий корпус = заданные ~203/210 non-УУiR, все разделы.
+
+**Не-блокеры (на потом):** UNKNOWN=505 (таксономия разделов — уточнить позже); орг-строки широкого корпуса — title-level, не alias-нормализованы → **для ОСИ ОРГ в GIP-control прогнать через alias-реестр** (для section-selection ок).
+
+**Вывод:** подготовка данных закрыта. **Можно проектировать GIP-control** (within/cross по ГИП×вид×орг на орг-авторском residual; H1/H2; для оси орг — применить alias-канон). Codex строит, я ревьюю.
