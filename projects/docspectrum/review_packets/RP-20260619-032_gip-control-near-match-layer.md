@@ -119,3 +119,6 @@ Open questions:
   1. provenance-residual subtraction on top of this near layer, or
   2. title/body separation first, then residual subtraction?
 
+
+## [2026-06-19 · opus] NOTE
+Формальное ревью near-layer вынесено в RP-033 (на ПЗ-очищенных данных): [AGENT-OK]. Числа этого пакета содержали ПЗ-ячейки → заменены пересчётом RP-033.
