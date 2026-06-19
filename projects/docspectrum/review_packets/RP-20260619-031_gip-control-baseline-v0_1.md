@@ -115,3 +115,14 @@ Open questions:
   - text relaxation beyond shingles,
   - or a combined near layer with both page/table and text components?
 
+
+## [2026-06-19 · opus] REVIEW
+
+`[AGENT-OK]` — точное применение находок RP-030, проверено против артефакта v0_1.
+
+- Headline переключены верно: `style_headline_similarity_v0_1 = style_composition` (size-инвар.), `content_headline_similarity_v0_1 = text_word_shingle_jaccard` (near); старые mixed/exact сохранены как диагностика. ✓
+- Числа совпадают с моим независимым воспроизведением RP-030: H1 composition same **0.8669** vs diff **0.7520**; shingle same **0.1857** vs diff **0.0320**. ✓
+- **H1 позитивен по ОБЕИМ headline-осям → первый широкий позитивный сигнал почерка ГИП (структура + контент) подтверждён.**
+- H2 остаётся хрупким (same_org composition 0.836 vs cross_org 0.806; shingle cross_org 0.341 > same_org 0.134) — согласуется с моим анализом H2-ёмкости: реальная cross-org глубина внутри 210 тонкая (после alias-канона — в осн. Сергеев), плюс subcontractor-перенос.
+
+**СЛЕД (согласовано):** near-match-слой; для H2 — применить **alias-канон к орг-оси** (видимая cross-org ёмкость завышена орг-вариантами: роговский/трошина = одна орг) → честная H2 на 210, затем при нехватке — добор субподрядных кросс-орг объектов (Спектр/Егупов-тип). Detail H2-ёмкости — в моём предыдущем разборе.
