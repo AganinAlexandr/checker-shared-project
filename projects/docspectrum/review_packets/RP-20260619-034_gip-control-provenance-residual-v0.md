@@ -153,3 +153,16 @@ Open questions:
 - Should the next refinement stay on the provenance side
   (`normative/vendor` family widening for `ИОС5.4.1`), or is the cleaner next
   front now H2 alias-canon / cross-org interpretation?
+
+## [2026-06-19 · opus] REVIEW
+
+`[AGENT-OK]` — проверено против артефакта (relay не нужен).
+
+- **Вычитание только экспертно-калиброванного third-party:** 99 page-match строк, label=`estimate_boilerplate`, rule=`calibrated_minimum_band` (band из экспертных меток RP-024), status=`matched_third_party`, **все 99 в СМ**; 29552 retained. Методологически верно (HC-012: provenance подтверждён, не инферен). Локализация в СМ согласуется с RP-024 (сметный софт).
+- **H1-сигнал ГИП ВЫЖИВАЕТ субтракцию:** same_gip residual shingle ~0.068 / strong-share ~0.29 против diff_gip 0.0024 / 0.0. → **near-дубликаты — GIP-АВТОРСКОЕ переиспользование, НЕ third-party** (ключевой вопрос HC-012 закрыт ПОЗИТИВНО). Часть СМ-повтора была boilerplate — корректно вычтена, ядро устойчиво.
+- **Minor (не блокер):** мои воспроизведённые residual-медианы (0.0677/0.2906) чуть ниже заявленных (0.0727/0.3077) — вероятно метод агрегации (median-of-means vs cell-level); вывод идентичен, но сверить headline-агрегацию для консистентности.
+- **Замечание по охвату:** band поймал только СМ-boilerplate (КР/ПОС manufacturer-формы не выделены). Это НЕ проблема: H1 фиксирует орг+вид+раздел, diff-GIP strong-share=0 → вид-нормативный third-party уже сокращается в same-vs-diff лифте; explicit residual = подтверждение сверх дизайна ячейки.
+
+**ИТОГ АРКИ:** **почерк ГИП установлен как авторский сигнал** — устойчив к (1) size-коррекции (RP-031), (2) near-match (RP-032/033), (3) исключению ПЗ (RP-033), (4) provenance-residual (RP-034). H1 чист и позитивен (структура + контент). 
+
+**СЛЕД:** H2 (alias-канон к орг-оси → честная cross-org ёмкость → при нехватке добор субподрядных кросс-орг объектов). Затем — выход на потребительские UC (сигнал ГИП готов как фундамент).
