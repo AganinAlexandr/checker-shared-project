@@ -146,3 +146,23 @@ Open questions:
   - or explicit provenance-residual subtraction first,
   - or both in a staged order?
 
+
+## [2026-06-19 · opus] REVIEW
+
+`[AGENT-OK]` (реестр + baseline v0) — проверено против кода+артефактов; числа воспроизведены из pairwise. **+ две интерпретационные находки, меняющие вывод.**
+
+**Подтверждено:**
+- H1 = `within-org, within-work-type, same-section`, same-GIP vs diff-GIP → **орг, вид, раздел ЗАФИКСИРОВАНЫ** → same-GIP лифт это ЧИСТЫЙ GIP-специфичный сигнал (не орг/вид-конфаунд). Сильный дизайн.
+- Числа воспроизведены точно: H1 style 0.6759/0.6718, content 0.1595/0.0571; H2 style 0.6797/0.7083, content 0.1944/0.1397. Реестр 210/1513/189 ready/25 субподряд. Тесты 3/3. alias-канон применён.
+
+**НАХОДКА 1 — «style flat» это АРТЕФАКТ метрики (важно):** `style_similarity_v0` смешивает size-ratio + composition. **Size-инвариантная `style_composition_similarity_v0` даёт same-GIP ЛИФТ: 0.8669 (same) vs 0.7520 (diff).** → ГИП ОСТАВЛЯЕТ структурный/композиционный отпечаток; он замаскирован size-ratio-членом (ровно урок RP-021: исключать size). Вывод «только content, не style» преждевременен — на size-инвариантной композиции стиль ЕСТЬ.
+
+**НАХОДКА 2 — near-content >> exact:** `text_word_shingle_jaccard` same/diff = **0.1857 / 0.0320 (5.8×)** против exact content 0.1595/0.0571 (2.8×). → **near-match СУЩЕСТВЕННО усилит GIP-сигнал** (exact = нижняя граница, RP-022).
+
+**Пересмотр вывода:** GIP-почерк присутствует на ОБЕИХ осях — composition (size-инвар.) И content (особенно near). Декомпозиция «стиль vs контент» пока искажена выбором метрик (size-смешанный style + exact-only content). Это НЕ «только контентная согласованность».
+
+**H2 — возможна позитивная переинтерпретация:** для same-GIP cross-org content/shingle ВЫШЕ same-org (0.194/0.341 vs 0.140/0.134). Это может быть НЕ контаминация, а **эффект «субподрядчик переносит свой почерк через орги»** (Спектр/Егупов как кросс-орг субподрядчик → шаблон-идентичный контент в разных оргах) = ПОДТВЕРЖДЕНИЕ H2 (ГИП трансцендирует орг), а не провал. Но n мал — нужны near-match + больше данных.
+
+**Ответы на open-q:** (1) реестр — да, стабильный source of truth (org-controlled, alias-канон, honest exclusions); (2) H1-framing: переключить style→**composition (size-инвар.)** + добавить near-content → ГИП виден на обеих осях; same-GIP content-лифт реален (cell-fixed); (3) **near-match ПЕРВЫМ** (усилит H1, прояснит H2-субподряд-гипотезу; exact слишком строг), provenance-residual ВТОРЫМ. Staged: near-match → residual.
+
+**СЛЕД:** near-match-слой для GIP-control (size-инвар. composition + near-content), затем provenance-residual; H2 — добрать данные. Codex строит, opus ревьюит.
