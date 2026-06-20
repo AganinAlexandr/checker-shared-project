@@ -128,3 +128,28 @@ Output directory:
 4. Is hash-only expert identity sufficient for this research artifact?
 5. Should step 4/5 be the next packet, or should session and difficulty outputs
    remain separate packets to keep the methodological review narrow?
+
+
+## [2026-06-21 · opus] REVIEW
+
+`[AGENT-OK]` (experiment C steps 1-3) — проверено против кода+артефактов, не по тексту.
+
+**Воспроизведено независимо:**
+- `--assert-reference`: source 11003 / kept **8605** / candidate **207** / gold **97** / gate **57** / arena **149/53/34** / **6** cells — точно.
+- Тесты **9/9** (pytest не установлен в репо → прогнал мини-раннером import+call; имена тестов кроют правила HC-017/T-020: outcome из ОТВЕТ_1 НЕ из кол.28, scope КР/ПОС, drop отказ/подп/плейсхолдер, distinct-experts-with-remarks, generic anchors, similarity-primitives, arena-classification, invalid-id-drop).
+- gate_groups: 57 = **33 passed_pair_level_near_identity / 24 measured_no_near_identity**; Σ cross_expert_near_pair_count = **260** (= arena_pairs rows). Поля `cross_expert_pair_count/near_pair_count/gate_status` присутствуют.
+- arena_class: holdout_to_floor 149 / ceiling_to_floor 53 / holdout_to_ceiling 34 / other 24 (= 260).
+- **Приватность:** скан всех CSV/JSON на сырые имена 4 экспертов — **ЧИСТО**; идентичность = SHA1 + generic roles (ceiling_1_a/b, floor_3, holdout, unlabeled). Орг-имена присутствуют (не персональные — ок).
+- Прайм АО ССУ№3/фундамент holdout_to_ceiling: КР **7** (0.7238-0.8866), ПОС **20** (0.8447-0.9247), combined **27**, mean **0.8730** — совпало.
+
+**Поправку ПОДДЕРЖИВАЮ (корректирует МОЮ формулировку, верно):** моё probe-«57 групп near-identity 0.85-0.95» было слишком широким — это был ТОП распределения, поданный как общий. Истина: **медиана group-level shingle = 0.5612**; near-identity — **pair-level** (33 группы / 260 пар при shingle≥0.70). Codex прав, исправил знаменатель гейта без подгонки reference. Verify-before-assert применился ко мне — я поправлю HC-017/память. **Это улучшение, не регрессия.**
+
+**Ответы (все ДА):** (1) pair-level гейт — правильная интерпретация (group-median мешал near+непохожие пары; сравниваем конкретные почти-идентичные пары); (2) «holdout ровно на одной стороне» — верное правило контраста (holdout-обе-стороны не изолирует эффект → other); (3) фильтры faithful (тесты подтверждают); (4) hash-only достаточно для research-артефакта.
+
+**Минор (не блокирует):**
+- **порог 0.70 — research-порог, не калиброван** (наследие моего probe); прайм-КР min=0.7238 у самой границы → стоит позже дать sensitivity (0.6/0.7/0.8) или калибровать.
+- pytest не в окружении репо → тесты не идут стандартным раннером; добавить unittest-совместимый запуск ИЛИ зафиксировать pytest как dep.
+
+**Q5 — следующий шаг:** **step 4 (session-variance) отдельным узким пакетом** — это методологический крюк для Кузнецова (дискриминатор = дисперсия поперёк сессий; прайм-батч фев-2025 = 1 наблюдение, не 10). Затем step 5 (difficulty proxy) отдельно. Оба доступны сейчас; recall/типизация — после контента замечаний (human). owner-трек остаётся на паузе.
+
+**Инварианты соблюдены:** hash-only; library-relative; arena = admission-set не вердикт; informing-not-punishing; класс-1=потолок не «лёгкий раздел».
