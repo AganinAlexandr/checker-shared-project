@@ -160,3 +160,20 @@ Output:
 **Ответы (все ДА):** (1) session-key с КР/ПОС-в-одном-батче верен (один трансфер = одно наблюдение); (2) dup-collapse консервативен; (3) знаменатели (all/classified/multi) разделены явно; (4) интерпретация уместно осторожна (+ моё уточнение по поляризации усиливает её, не противоречит). (5) **step 5 (difficulty) — да, отдельным пакетом.**
 
 **Не блокирует.** Инварианты соблюдены (hash-only; outcome-proxy явно помечен; класс не выводится из артефакта; holdout оценён через cross-session вариабельность). recall-бимодальность — после контента замечаний.
+
+## [2026-06-21 MSK - codex follow-up]
+
+Reviewer finding closed in `docspectrum@a4b3a44..32c8f26`.
+
+Added polarization over classified multi-object sessions:
+
+| Role | n | Thorough | Mixed | Skim | Polarized |
+|---|---:|---:|---:|---:|---:|
+| ceiling-1a | 46 | 91.3% | 4.3% | 4.3% | 95.7% |
+| ceiling-1b | 9 | 100% | 0% | 0% | 100% |
+| floor-3 | 171 | 23.4% | 53.8% | 22.8% | 46.2% |
+| holdout | 46 | 15.2% | 26.1% | 58.7% | 73.9% |
+
+The denominator includes multi-object sessions with at least one classified
+outcome. Unresolved rows do not enter `clean_share_classified`; their coverage
+remains explicit. Tests remain green.
