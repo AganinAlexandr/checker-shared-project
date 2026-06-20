@@ -150,3 +150,23 @@ preserves both explanations: common owner or shared template/process.
    handwriting rather than merged into the disclosed four-title network?
 5. After this cleanup, should the next packet be IUL validation against typed
    components?
+
+
+## [2026-06-20 · opus] REVIEW
+
+`[AGENT-OK]` (typed owner-identity graph v1) — проверено против кода (`build_owner_identity_typed_graph_v1.py`) + артефактов, не по тексту пакета. Числа воспроизведены из JSON/CSV; тесты прогнаны.
+
+**Воспроизведено точно:**
+- 12 typed edges = 1 rename + 2 disclosed_network + 1 shared_gip_handwriting + 8 owner_or_template; 7 typed components; 3 unvalidated_attachment; p90=24.0 (Сфера=79 объектов → noise=True). Тесты 9/9 (4 v1 + 5 v0, прогнал оба файла — `OK`).
+- Якоря: rename Комтех↔АО ССУ№3 (`handwriting_shared_gip_temporal_handoff`, handoff=0.4286); Ватага↔Спектр `disclosed_subcontract_network` (4t=17); Тиволион↔К1 — честный coverage gap (`matrix_pair_present=False`, не подогнан).
+
+**Ответы на reviewer-questions (все ДА), с проверкой логики:**
+1. **Приоритет таксономии не смешивает причинность** — да. `four_title` ПЕРВЫМ (раскрытая сеть ≠ скрытое владение, HC-013), потом rename (конъюнкция 3 сигналов), потом shared_gip, потом owner_or_template как fallback с СОХРАНЕНИЕМ обеих гипотез (owner ИЛИ template). Полезные гипотезы не отброшены.
+3. **Сфера — корректно** template-noise-prone attachment: owner_or_template + unvalidated_attachment_to_core + noise=True (79≥p90=24), без shared-GIP и без 4-титула → не может расширять rename-ядро. ✓ Ровно исправление находки RP-039.
+4. **Ватага↔СП Стройинвест ГРУПП — корректно** отделена: 4t=0 (не сеть), handoff=0.2917<0.40 (не rename), shared_gip=1 → `shared_gip_handwriting`; помечена как unvalidated_attachment к сетевому ядру, ядро НЕ мержит. ✓ Чистое разграничение «общий ГИП Сергеева» vs «раскрытый конвейер».
+
+**НАХОДКА (Q2 — порог rename НЕ консервативен сам по себе):** порог 0.40 калиброван на ЕДИНСТВЕННОМ подтверждённом позитиве (handoff=0.4286) → выборка n=1, по сути не калибровка. Реальную консервативность несёт **конъюнкция** (handwriting ∧ shared_gip ∧ handoff), НЕ значение порога. Доказательство в самих данных: **РусСтройГрупп↔СитиГазСтрой handoff=0.5417 — ВЫШЕ самого подтверждённого rename (0.4286)**, но корректно удержан как owner_or_template ТОЛЬКО потому, что shared_gip=0. → Вывод: shared-GIP — несущий gate; порог 0.40 не трогать в изоляции (с одним якорем у него нет настоящей опоры). Это усиливает, а не опровергает дизайн v1; но в risks стоит явно записать «threshold n=1, gating держится на GIP-конъюнкции».
+
+**Q5 — следующий пакет ИУЛ-валидация: ДА, с точным таргетом.** Per HC-015/016 ИУЛ = только валидационный слой (отменяется 01-03-2026, Минстрой 4420-КМ/14). Главная ценность ИУЛ ИМЕННО для v1: **8 owner_or_template рёбер конфлейтят «owner» vs «template»** — это ровно та неоднозначность, которую разрешает ИУЛ-персонал-overlap. Тест: добавить personnel-overlap → owner_or_template со СПЛИТом на (а) personnel-shared = owner-кандидат, (б) нет overlap, только похожее оформление = template/process. Если handwriting-типизированные ядра (rename+network) ≈ ИУЛ-персонал-кластеры → доказано, что долговечный метод воспроизводит истину без ИУЛ (HC-015 «главный выигрыш»). Доп.: измерить долю несоответствий ИУЛ↔почерк (UC-фальсификация, HC-015) — но это можно отдельным пакетом после disambiguation.
+
+**Не блокирует.** Дизайн чистый, инварианты соблюдены (library_relative_typed_candidate_not_owner_verdict на всех компонентах; attachments не наследуют ядро; raw similarity v0 не пересчитан). СЛЕД: ИУЛ-валидация типизированных компонентов (таргет = разрешить 8 owner_or_template через personnel-overlap), затем — UC-фальсификация ИУЛ↔почерк.
