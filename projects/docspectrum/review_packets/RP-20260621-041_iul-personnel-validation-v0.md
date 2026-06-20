@@ -1,4 +1,4 @@
-# RP-20260621-041: IUL personnel validation and GIP QC v0
+# RP-20260621-041: IUL personnel validation and roster relation v0
 
 Status: open
 Project: DocSpectrum
@@ -13,7 +13,7 @@ for the eight `owner_or_template` edges, with separate GIP quality control.
 
 - repo: github.com/AganinAlexandr/DocSpectrum
 - branch: main
-- range: docspectrum@c43d7a0..4cf609c
+- range: docspectrum@c43d7a0..4a0f0e0
 - focus:
   - strict IUL PDF-only inventory (`*.sig` excluded);
   - hash-only person/role extraction;
@@ -181,7 +181,8 @@ about the cryptographic signer because sidecar signatures are outside scope.
 
 - commits:
   - `f9eb75f` harvest hash-only IUL rosters;
-  - `4cf609c` refine title-GIP roster-presence QC
+  - `4cf609c` refine title-GIP roster-presence extraction;
+  - `4a0f0e0` make title-GIP/IUL relation descriptive
 - code:
   - `tools/build_iul_personnel_validation_v0.mjs`
   - `tests/test_build_iul_personnel_validation_v0.mjs`
