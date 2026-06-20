@@ -209,3 +209,30 @@ about the cryptographic signer because sidecar signatures are outside scope.
    signature metadata for a future UKEP layer?
 5. Should the next step be targeted OCR of the 13 image-only IUL, or a first
    IUL-handwriting mismatch demo on readable objects?
+
+
+## [2026-06-21 · opus] REVIEW
+
+`[AGENT-OK]` (ИУЛ personnel validation + GIP QC v0) — проверено против кода+артефактов, не по тексту. Числа воспроизведены из JSON/CSV; тесты прогнаны.
+
+**Воспроизведено точно:**
+- inventory 1037 / unique 1033 / parsed 1020 / image-only 13 / **detached .sig = 0** (инвентарь: 0 строк со `.sig`); person-role hash evidence 3809; parsed с GIP-role 1009, без 11.
+- Тесты **15/15** (прогнал: ИУЛ 6/6 `pass`; owner v0 5 + v1 4 = 9/9 ранее).
+- Overlap (developer): **Комтех↔Сфера J=1.0** (2/2, shared 2, +shared GIP 1); **ССУ↔Сфера J=0.5** (1/2, +GIP 1); **Мир↔К1 J=0.2** (1, GIP 0). Остальные 5 = no_overlap/insufficient. Совпало.
+- GIP-QC: title-GIP как ИУЛ-ГИП 152 + в иной роли 2 = 154; не наблюдён 1 → **154/155 = 99.4%**; missing-ref 60, image-only 3, no-IUL 6. Совпало.
+- **Приватность подтверждена:** `iul_person_hash_evidence_v0.csv` = object/org/content_sha1/person_hash/surname_hash/role_class/kind — **сырых имён нет**. (Inventory хранит file_name/file_path — это имена ФАЙЛОВ/секций, не персональные данные → допустимо.)
+
+**Ответы на reviewer-questions (все ДА):**
+1. Ослабление «personnel ground truth»→«declared-roster correlation» + title-GIP как описательный контекст — **корректно** и согласуется с HC-015 (ростеры могут быть формальны/подложны в капремонте). Понижение консервативно и уместно.
+2. Exact dev-overlap как слабое подтверждение, absence non-dispositive — **да**.
+3. Title-GIP framing (2 dev-роли + 1 отсутствие, не ошибки; 1366_25 Шпаков отсутствует, Жиров/Питанов в ростере — описательно, .sig-подписант не инспектируется) — **корректно**.
+4. Исключение всех `.sig` для ИУЛ/PDF-слоя с резервом подписи под будущий УКЭП — **верно** (HC-015: персонал-сигнал мигрирует ИУЛ→УКЭП).
+
+**ГЛАВНАЯ НАХОДКА (смысл результата для owner-трека):** цель RP-041 — **расщепить 8 owner_or_template рёбер** на owner (personnel-shared) vs template (нет overlap). Итог: **ИУЛ-overlap НЕ расщепляет** — declared-overlap есть лишь у 3 рёбер, и все Сфера-/малочисленные:
+- **n-хрупкость:** Комтех↔Сфера J=1.0 держится на **2/2 разработчиках** — крошечная выборка, не «доказанный общий штат», а скорее **малый формальный/шаблонный ростер**.
+- Все 3 overlap-ребра упираются в **Сферу** (79 объ, уже large-template-noise в RP-040) → согласуется с **template**-объяснением (Сфера = крупный пул/шаблон, используемый Комтех/ССУ), а не доказанным владением. Плюс Комтех=ССУ (rename-пара) → «оба↔Сфера» фактически одно отношение.
+→ Вывод: **ИУЛ не снял неоднозначность 8 рёбер** (честно показано); долговечный сигнал = ПОЧЕРК, ИУЛ — слабый валидационный контекст. Это ценный отрицательный результат (подтверждает HC-015 «ростеры формальны»).
+
+**Q5 — следующий шаг:** OCR 13 image-only — **низкий ROI** (разблокирует только Горизонт/СитиГазСтрой, у которых coverage и так insufficient). Выше ценность — **демо рассогласования ИУЛ↔почерк на читаемых объектах** (UC-фальсификация, HC-015; адресует «подписи лиц, не участвовавших», Минстрой 4420-КМ/14). НО: живой приоритет human сейчас — **C-эксперимент + поиск контента замечаний** (HC-017), не owner-трек → рекомендую держать owner-трек на паузе до отмашки.
+
+**Не блокирует.** Инварианты соблюдены (hash-only; library-relative; disclosed≠falsification; .sig out-of-scope; declared mismatch=сигнал не доказательство). Resource-fix (MuPDF destroy+emptyStore: 548→1020 parsed) — реальное исправление, не переклассификация.
