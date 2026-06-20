@@ -18,7 +18,7 @@ for the eight `owner_or_template` edges, with separate GIP quality control.
   - strict IUL PDF-only inventory (`*.sig` excluded);
   - hash-only person/role extraction;
   - weak declared-developer overlap validation;
-  - title-page GIP presence in the IUL roster;
+  - descriptive title-page GIP relation to the IUL roster;
   - resource-safe MuPDF processing
 - inputs:
   - `8` owner-or-template edges;
@@ -128,18 +128,19 @@ handwriting result by itself.
 
 All IUL PDFs on Horizon/CityGazStroy side are image-only.
 
-## Title-page GIP roster QC
+## Descriptive title-page GIP roster relation
 
 The title page is authoritative for who is shown as GIP for the section.
-The check asks whether that person appears anywhere in the IUL roster. A
-qualified engineer may appear as a developer, so a different IUL role is not a
-violation. `.sig` signer identity is not inspected.
+The IUL roster does not have to include that person when other required names
+are properly provided. Presence, another role, or absence are descriptive
+states, not correctness verdicts. A qualified engineer may appear as a
+developer. `.sig` signer identity is not inspected.
 
 For `224` objects:
 
 - title-page GIP appears as IUL `ГИП`: `152`;
 - title-page GIP appears in another IUL role: `2`;
-- title-page GIP absent from extracted IUL roster: `1`;
+- title-page GIP not observed in extracted IUL roster: `1`;
 - title-page GIP reference unavailable: `60`;
 - image-only IUL: `3`;
 - no IUL PDF: `6`.
@@ -164,7 +165,7 @@ At file level:
 These are not violations: the title-page GIP is present in the IUL roster and
 may also act as a developer.
 
-### One roster-presence QC candidate
+### One example without the title-page GIP in the roster
 
 `1366_25`, Сфера:
 
@@ -173,9 +174,8 @@ may also act as a developer.
    - all five list Питанов as developer;
    - Шпаков is absent from the extracted rosters.
 
-This is a review candidate, not an automatic violation. It may be explained by
-version/package composition. It is not a statement about the cryptographic
-signer because sidecar signatures are outside scope.
+This is not an error or review candidate by itself. It is also not a statement
+about the cryptographic signer because sidecar signatures are outside scope.
 
 ## Evidence
 
@@ -198,13 +198,12 @@ signer because sidecar signatures are outside scope.
 ## Reviewer questions
 
 1. Is the validation correctly weakened from "personnel ground truth" to
-   "declared-roster correlation", with the title-page GIP treated as
-   authoritative and any IUL role accepted?
+   "declared-roster correlation", with title-GIP presence treated only as
+   descriptive context?
 2. Is exact developer overlap useful as weak corroboration while absence is
    correctly non-dispositive?
-3. Is the title-GIP roster-presence QC correctly framed: two allowed
-   developer-role appearances and one review candidate where the title GIP is
-   absent?
+3. Is the title-GIP relation correctly framed: two developer-role appearances
+   and one absence, none treated as an error?
 4. Is excluding every `.sig` correct for this IUL/PDF layer while reserving
    signature metadata for a future UKEP layer?
 5. Should the next step be targeted OCR of the 13 image-only IUL, or a first
