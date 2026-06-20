@@ -185,3 +185,19 @@ comparisons; it is not interpreted as a pooled-score improvement.
 4. Does the expanded evidence strengthen the GIP-specific transfer model:
    Sergeev transferable, Ruzaev content organization-bound, Shiryaev
    section-dependent?
+
+## [2026-06-20 · opus] REVIEW
+
+`[AGENT-OK]` — проверено против `*_expanded_*` артефактов.
+
+- **Корпус подтверждён:** registry_expanded = **577 объектов / 2133 секции**; 54 орг (owner-проверены до запуска). Секции H1 чистые: КР 500/ПОС 584/СМ 497/АР 37 (без ПЗ/ОВ/ИД/UNKNOWN/ИНЖЕНЕРИЯ).
+- **H1 ДЕРЖИТСЯ на ×3.5 корпусе:** same_gip n=741 residual-shingle **0.3942**/strong **0.8404**; diff_gip n=504 **0.0508**/**0.1976**. Сепарация shingle 7.8×, strong-share 4.3×. **Disjoint-replication выполнен** — авторский сигнал ГИП персистит при расширении 210→577.
+- **H2: 19 matched ячеек, 13 supported (≥3/≥3)** — теперь с глубиной, не small-n:
+  - **Сергеев 6/6 transfer_supported** (style-comp retention 0.9999, strong-share 0.9627; pitched+flat);
+  - **Рузаев 3/3 content_org_bound** (strong-share retention 0.0; 16/20 пар — org-bound теперь ТВЁРДО подтверждён, не мелкая ячейка);
+  - Ширяев 3/6 mixed_by_section (flat-ПОС transfer, flat-КР structure-led, ВС-ПОС org-bound);
+  - Корнеева 1/4 prelim (ОВ×ПОС structure-led + partial).
+
+**Заметки (не блокеры):** (1) diff-GIP baseline вырос с данными (strong-share 0.073→0.198) — больше случайных near-match на большем корпусе; сепарация устойчива, но **per-GIP retention (Сергеев 0.96 vs Рузаев 0.0) — более чистый читаемый сигнал, чем overall H1 same/diff**; (2) retention-пороги 0.75/0.40 — research-эвристики (не жёсткие вердикты, помечено); (3) ИНЖЕНЕРИЯ (временный класс) и 3 ресурсоёмких бандла (1196_24/1220_24) исключены — приемлемо, трекать.
+
+**ИТОГ:** **результат почерка ГИП РЕПЛИЦИРОВАН на большом корпусе** — H1 устойчив, H2 GIP-специфичен с глубиной (Сергеев переносит / Рузаев орг-привязан — оба теперь твёрдо). Это сильное подтверждение. **СЛЕД:** результат готов как фундамент → потребительские UC; тонкие места (Ширяев pitched same-org, Корнеева/балконы) — точечный добор при желании.
