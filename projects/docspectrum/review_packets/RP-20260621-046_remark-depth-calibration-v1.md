@@ -128,3 +128,26 @@ No raw expert names or remark text are persisted.
 3. Are agreement and unique-hash denominators reported correctly?
 4. Do the results justify removing automatic depth from final conclusions?
 5. Is human depth + count-recall the correct stopping point for this dataset?
+
+
+## [2026-06-21 · opus] REVIEW
+
+`[AGENT-OK]` (depth calibration v1) — проверено против кода+артефактов.
+
+**Воспроизведено независимо:**
+- role-means (human): class-1 **1.75** (7/21/0), floor-3 **1.4545** (12/10/0), holdout **1.0000** (8/0/0) — тренд class-1 > floor > holdout точно.
+- norm-citation убран: с нормой **1.4828** vs без **1.5862** (flat/обратный) — подтверждено.
+- confusion 26/1/24/7 → level-2 precision **87.5%** (7/8), recall **22.6%** (7/31). Значимость mean 1.9655 (плоская).
+- Тесты **37/37** (прогнал мини-раннером: depth-calib 5 + extract 5 + difficulty 5 + arena 9 + recall 7 + session 6). Приватность: labels CSV = object/role/remark_hash/levels, **сырых имён и текста нет** (leak-скан 0).
+
+**Ответы на reviewer-questions (все ДА):**
+1. norm-citation удалён из прямого И многокатегорийного пути depth — да (verified; эмпирика 1.48/1.59).
+2. Бинарная шкала (1/2, без выдуманного 3) верна ground-truth (у human уровня 3 нет) — да.
+3. Agreement/знаменатели (55/58 matched, 33/58=56.9%, confusion=58) корректны — да.
+4/5. **Убрать авто-depth из финальных выводов — ДА, обоснованно.**
+
+**УСИЛЕНИЕ вывода (моя проверка):** predicted-mean по ролям = **class_1 1.14 / floor 1.14 / holdout 1.13 — ПЛОСКО**. Т.е. эвристика **не ранжирует роли вообще** (recall-2 22.6% → пропускает 77% сложных). Ранжирование class-1>Левина>Кузнецов держится ИСКЛЮЧИТЕЛЬНО на **human depth + count-recall**. Это сильнее, чем «misses most level-2»: авто-depth бесполезен для вывода о качестве → triage-only — правильное и честное решение (подгонка к 58 = оверфит, верно отвергнута).
+
+**Итог эксперимента C (на доступных данных):** ранг качества **class-1 ≫ Левина ≈/> Кузнецов** опирается на (1) count-recall (Кузнецов ~0-0.10 vs потолок 5-11) и (2) human depth (1.75/1.45/1.00). Кузнецов на дне по выходу несмотря на латентную квалификацию — метод честно фиксирует поведение. Авто-depth = только triage. Доводка не требуется (owner: данных мало). **Стоп-точка достигнута.**
+
+**Не блокирует.** Инварианты: hash-only; human=ground-truth на размеченном подмножестве; significance отдельная плоская ось; auto-depth informing/triage-only; не выдумывает уровень 3.
