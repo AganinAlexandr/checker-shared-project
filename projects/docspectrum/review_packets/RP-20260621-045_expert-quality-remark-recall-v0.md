@@ -185,3 +185,26 @@ No raw remark text or raw expert names are persisted.
 4. Are the depth classes acceptable as calibration candidates?
 5. Should next work prioritize human depth calibration or semantic recurrence
    clustering before any user-facing expert-quality report?
+
+
+## [2026-06-21 · opus] REVIEW
+
+`[AGENT-OK]` (remark-recall v0) — проверено против кода+артефактов.
+
+**Воспроизведено независимо:**
+- `--assert-reference`: worklist 199 / clean **115** / source1-content **52** / absent **32** / no-registry 0 / source-2 found **26** / not-found **6** / registry rows 207 / source-2 remarks **42** / distinct hashes **150**. Точно.
+- Тесты **32/32** (прогнал мини-раннером: difficulty 5 + arena 9 + session 6 + recall 7 + extract 5).
+- **Enriched recall совпал точно:** ГазТеплоСервис скатная ПОС 0.5/5.0=**0.10**; СтройМонтаж скатная ПОС 0.5/5.75=**0.087**; СтройМонтаж плоская ПОС 0.5/5.0=**0.10** (ceiling появился из source-2: Золотарева 1831 круг-3=5); прайм АО ССУ№3 фундамент КР(11.0)/ПОС(7.5)→holdout 0.0=**0.00**; Чердак 11.5→**0.00**. Same-object 1221_24: ceiling 10 / holdout 0.
+- **Приватность чистая:** все CSV = object_id + expert_hash + remark_hash + counts/categories; **сырых имён и текста НЕТ** (скан 4 экспертов — 0 совпадений; download_remark_content хранит remark_hash, не текст). ✓
+- КР N=0 артефакт исправлен (1085/1190/1198 КР → 1) через доп. заголовки «Замечания экспертизы»/«Текст замечаний».
+
+**Ответы на reviewer-questions:**
+1. **1284_24 — фикс ВЕРНЫЙ** (мой probe-баг: dict перезаписывал ранний remark-row поздним clean-row; first-remark primary → сохранять ранний). Корректность, не дрейф.
+2. Review-level таргетинг (object×section×expert_hash×role) — строг, да.
+3. baseline vs enriched разделены чисто (recovered 1-remark поднимает enriched, baseline-0 не затирается искусственно) — да.
+4. **Depth-классы — НАХОДКА: эвристика miscalibrated.** holdout получил **3× `substantial_candidate/regulatory`**, тогда как human подтвердил замечания 1147 как **ПРОСТЫЕ**. Причина: depth, видимо, триггерит «substantial» на **цитату нормы** (ПП/СП/ГОСТ), но цитирование нормы ≠ глубина (простое «отсутствует X, П.23 ПП87» цитирует норму, оставаясь простым). → depth_class_v0 пока **нельзя использовать для выводов о качестве**; count-recall остаётся надёжным сигналом. Принять классы только КАК КАНДИДАТЫ с явным флагом расхождения с ground-truth.
+5. **СЛЕД: human-калибровка глубины ПЕРВОЙ** (heuristic противоречит 1147=простое → нужно развести «цитирует норму» vs «существенно по сути» на малом размеченном наборе), семантическая рекуррентность — второй. **User-facing отчёт НЕ делать до калибровки depth** (сейчас он завысил бы Кузнецова). count-recall (Кузнецов 0-0.10 vs потолок) — уже надёжный результат для внутреннего вывода.
+
+**Рекуррентность (first-signal):** один хеш в 4 документах через ceiling-1a И holdout = возможный boilerplate/шаблонный пункт, копируемый и потолком, и holdout — отметить (семантика позже).
+
+**Не блокирует.** Инварианты: hash-only; registry-clean авторитетен; content=только счёт/контент; baseline/enriched раздельны; informing-not-punishing. count≠quality честно помечено.
