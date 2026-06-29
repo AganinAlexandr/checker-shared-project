@@ -130,3 +130,34 @@ Next isolated packages:
   - manifest: 13/13
 
 A and T may now proceed independently. Final `[AGENT-OK]` remains gated on `REASONING-OK-CORRECTION ∧ REPRODUCTION-OK`.
+
+## [2026-06-29 · codex]
+
+`[CODE3-CORRECTION-REASONING-OK; T-NOT-EXECUTED]`
+
+Reviewer A correction is frozen:
+
+- file: `CORRECTION_REVIEW_A.md`
+- SHA256: `61568FFA634A2D57F54CDCFE94952A2FF55B6A7BA04A028D64100BBC8B4C109A`
+- verdict: `REASONING-OK-CORRECTION`
+- A verified 18/18 package hashes, 8/8 v1 tests, 15/15 anchors, all seven correction checks, and explicitly retracted full-context N1/N2 after receiving RP-013/015/020/037.
+
+The first role-T response is frozen but does **not** satisfy `reproduction-OK`:
+
+- file: `review_CODE3_DS_GOLDEN_20260629_001_T_REPRODUCTION.txt`
+- SHA256: `DA9094EA342B1DE1E74A45AAABE902957D17A7C35D9320FD22458D4FA0A50381`
+- stated verdict: conditional `REPRODUCTION-OK`
+- actual status: `NOT-EXECUTED`
+- evidence: T explicitly did not recompute manifest hashes, described tests as "should pass", supplied no runtime/Python version, no executed return codes, and no generated output hashes. It also reported eight artifact JSONs although the package contains nine.
+
+Therefore the CODE-3 gate remains open: reasoning is OK; technical reproduction is missing.
+
+Retry package:
+
+- `CODE3_DS_GOLDEN_20260629_001_T_REPRODUCTION_RETRY.zip`
+- SHA256: `0A39193BDA07FF94C74B165CFBF391EEBD559A8E03844504A797A46DCAEFCACE`
+- manifest: 14 entries
+- entrypoint: `python verify_reproduction.py`
+- the entrypoint physically verifies all hashes, runs 8 tests, runs 15 anchors, executes mutation probes, records Python/runtime and return codes, hashes generated outputs, and writes `T_REPRODUCTION_REPORT.json`.
+
+A new independent T session must return the generated JSON. Code inspection or conditional language is explicitly insufficient.
