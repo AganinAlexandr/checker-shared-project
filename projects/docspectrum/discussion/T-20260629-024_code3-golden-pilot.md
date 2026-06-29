@@ -2,8 +2,8 @@
 
 Date: 2026-06-29
 Project: DocSpectrum
-Status: focused_review_packages_ready
-Profile: CODE-3 pilot under proposed DEC-20260629-008
+Status: closed_reviewed
+Profile: CODE-3 pilot validating accepted DEC-20260629-008
 
 ## [2026-06-29 · codex]
 
@@ -161,3 +161,29 @@ Retry package:
 - the entrypoint physically verifies all hashes, runs 8 tests, runs 15 anchors, executes mutation probes, records Python/runtime and return codes, hashes generated outputs, and writes `T_REPRODUCTION_REPORT.json`.
 
 A new independent T session must return the generated JSON. Code inspection or conditional language is explicitly insufficient.
+
+## [2026-06-29 · codex]
+
+`[CODE3-GATE-CLOSED]` Independent retry T executed the evidence suite.
+
+- file: `review_CODE3_DS_GOLDEN_20260629_001_T_REPRODUCTION_RETRY.txt`
+- SHA256: `6E287F94F04E47AF84AE44FAAEDFE863D8D71C6E65A19621DAB82E148B9817BC`
+- environment: Python `3.12.12`, GCC 12.2.0 / Linux
+- manifest: `14/14`, mismatches `0`
+- unit tests: `8/8`, executed
+- golden anchors: `15/15`, failed `0`
+- mutation probes: `6/6`
+- generated output hashes supplied for both CSV and JSON
+- verdict: `REPRODUCTION-OK`
+
+The report text contains the full machine-evidence payload although the generated JSON was not copied as a separate file. Unlike the rejected first T attempt, it supplies an independent runtime, actual timings/results, manifest recomputation, mutation outcomes, and output hashes; it is accepted as executed reproduction.
+
+### Reconciliation
+
+- A: `REASONING-OK-CORRECTION`; all blocking contract findings closed; N1/N2 retracted after complete RP trace.
+- B: focused `REASONING-OK`; its brittleness/provenance concerns are addressed by explicit v1 stability modes and per-anchor RP provenance. Its portability concern is empirically reduced by the independent Linux run with explicit CLI paths. Artifact-to-code version binding remains optional hardening, not a correctness blocker for this frozen-artifact regression layer.
+- T: `REPRODUCTION-OK` on an independent environment.
+
+Final CODE-3 verdict: `[AGENT-OK]` for `docspectrum@e00f34b..aeb7cb4`.
+
+The pilot validates DEC-20260629-008 with two required refinements: full context needs an explicit claim/anchor→source map, and T status requires machine evidence of execution rather than prose inspection.
