@@ -2,7 +2,7 @@
 
 Date: 2026-06-29
 Project: DocSpectrum
-Status: proposed_human_design_gate
+Status: accepted_fixture_group_built
 Profile: Phase-0 design by codex; Opus reserved for final CODE-3 reasoning review
 
 ## [2026-06-29 · codex] DESIGN
@@ -183,3 +183,26 @@ Threshold calibration, host mixing, graphics, and the 13-object holdout remain o
 
 Implementation begins when the owner confirms that v0 should start with isolated text/table lineage families
 and defer full-document mixing. Any change to the unit, transformations, split, or hypotheses reopens Phase-0.
+
+## [2026-06-29 · human]
+
+`[DESIGN-ACCEPTED]` Isolated component-lineage benchmark first; full-document mixing deferred.
+
+## [2026-06-29 · codex]
+
+`[IMPLEMENTATION-CHECKPOINT]` Fixture group built without scoring.
+
+- DocSpectrum commit: `bc041bd`
+- output: `E:\output\DocSpectrum\source_lineage_fixtures_v0`
+- fixtures: `120` unique PDFs (`16` canonical sources + `104` queries)
+- kinds: text `56`, table `64`
+- family split: calibration `10`, sealed evaluation `6`
+- manifest PDF hash audit: `120/120`, mismatches `0`
+- repeated-build hash comparison: differences `0`
+- exact queries byte-distinct from sources: `16/16` (opaque metadata instance token prevents CRC deduplication; not used by scoring)
+- tests: fixture suite `5/5` in the PyMuPDF environment; combined fixture+golden-v1 `13/13`
+- claim boundary: synthetic component lineage only; no borrowing/authorship/holdout claim
+
+No Opus resource used. No explorer bundle, retrieval score, threshold, or natural holdout result exists yet.
+
+Next implementation slice: three terminating PSE batches of at most 40 one-page fixtures, then exhaustive component retrieval in a dedicated benchmark namespace.
