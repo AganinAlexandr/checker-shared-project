@@ -89,3 +89,44 @@ Both independently identified snapshot brittleness / over-freezing and missing h
 - holdout audit boundary: 129 reserved PDFs vs 475 training CRCs, exact overlap `0`; semantic independence is not claimed
 
 Reviewer B's output is intentionally absent from A's package. The next reasoning action is A full-context review in the same session; no code changes or reconciliation occur before that output is frozen.
+
+## [2026-06-29 · codex]
+
+`[CODE3-FULL-REVIEW-FROZEN]` Reviewer A completed the progressive full-context pass.
+
+- file: `review_CODE3_DS_GOLDEN_20260629_001_A_FULL_CONTEXT.md`
+- SHA256: `5B87FFB79636F1E6456FDDAB653C21C1DBDD7DE122519F37D34A90317B7F53F1`
+- verdict: `CHANGES-REQUIRED`
+- package integrity reproduced by A: 41/41
+- reasoning rerun reported by A: 18/18 anchors and 2/2 tests; this is not role-T `reproduction-OK`
+
+Confirmed load-bearing findings: v0 guarded four GIP snapshots instead of the reviewed relation; tolerance bands lacked statistical basis; the suite claim and per-anchor provenance were too broad; type coercion and failure/CLI paths needed low-cost hardening.
+
+### Generator audit of the full-context finding
+
+The first full-context package itself omitted RP-013, RP-015, and RP-020, while RP-037 was present but not used in A's trace. Consequently the claim that several final values were unreviewed was not sustained by the complete RP record:
+
+- `24 / 0.9137` was directly reviewed in RP-013;
+- corpus `475` was reported in RP-015;
+- text candidates `42993` and bridge `250` were directly reviewed in RP-020;
+- final GIP values `0.3559 / 0.0394 / 0.7851 / 0.0727` were reproduced in RP-037 after ID exclusion. The RP-034 aggregation caveat concerned an earlier overall aggregation.
+
+This is recorded as a context-selection defect in the first progressive package. It does not negate A's correct contract-design findings.
+
+### Correction
+
+- DocSpectrum commit: `aeb7cb4` (`golden_anchors_v1`)
+- v1 result: 15/15 passed
+- generator tests: v0+v1 10/10 passed
+- changes: strict numeric types; Axis A floor; reviewed aggregate exact recall; two relational GIP gaps; per-anchor RP provenance; explicit snapshot modes and claim boundary; failure/filter/operator/CLI tests
+
+Next isolated packages:
+
+- Reviewer A correction: `CODE3_DS_GOLDEN_20260629_001_A_CORRECTION.zip`
+  - SHA256: `48DAFED0C7A397E86990845D1C31FDF54A855C0BEC70BDF9894DCF7056B423F4`
+  - manifest: 18/18
+- role T reproduction: `CODE3_DS_GOLDEN_20260629_001_T_REPRODUCTION.zip`
+  - SHA256: `74C7C60CA4CF405F9EA5E510AA3747ABE60B82073E7CDA5E7218C84197099CB8`
+  - manifest: 13/13
+
+A and T may now proceed independently. Final `[AGENT-OK]` remains gated on `REASONING-OK-CORRECTION ∧ REPRODUCTION-OK`.
