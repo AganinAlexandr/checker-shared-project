@@ -64,3 +64,28 @@ Evidence files inside A/B are byte-identical. Only scope/instruction/response fi
 6. Reconciliation occurs only after both focused reviews are frozen.
 
 No full-context material or review result is appended here until human confirms both focused passes are frozen.
+
+## [2026-06-29 · codex]
+
+`[CODE3-FOCUSED-FROZEN]` Human supplied both independent focused reviews; their files are frozen before progressive disclosure.
+
+### Frozen review outputs
+
+- Reviewer A: `review_CODE3_DS_GOLDEN_20260629_001_A_FOCUSED.txt`
+  - SHA256: `1489849134DA77393A0364B41E6DEA0C078DEF385A0537E49B7523789BAA2C8A`
+  - focused verdict: `CHANGES-REQUIRED`
+- Reviewer B: `review_CODE3_DS_GOLDEN_20260629_001_B_FOCUSED.txt`
+  - SHA256: `FDA3F78D84FB18FC2C813C4C1908FD7306108F3BCD822FC949C2AAD9F67FE47B`
+  - focused verdict: `REASONING-OK-FOCUSED`
+
+Both independently identified snapshot brittleness / over-freezing and missing historical or artifact context. A additionally reproduced unsafe type-coercion passes and identified the missing relational GIP invariant; B independently identified stale-artifact/version binding and path portability. This is an observation about complementarity, not reconciliation: neither reviewer has seen the other's output.
+
+### Progressive package for Reviewer A
+
+- path: `E:\commons\DocSpectrum\review_packages\CODE3_DS_GOLDEN_20260629_001\CODE3_DS_GOLDEN_20260629_001_A_FULL_CONTEXT.zip`
+- SHA256: `BEF2D44BE7475F3BD1053B5F87C231B7B45D8AE75333557F6D4E7B512392D05F`
+- manifest verification: 41/41 entries match
+- disclosure: nine anchored JSON artifacts, full two-commit history, HC-018/019, relevant RP evidence, 475-row training index, and exact-CRC holdout audit
+- holdout audit boundary: 129 reserved PDFs vs 475 training CRCs, exact overlap `0`; semantic independence is not claimed
+
+Reviewer B's output is intentionally absent from A's package. The next reasoning action is A full-context review in the same session; no code changes or reconciliation occur before that output is frozen.
